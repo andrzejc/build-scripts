@@ -18,21 +18,19 @@ if (MSVC)
 		set(_subdirs ${LIBPORTAUDIO_ROOT}/x64 ${LIBPORTAUDIO_ROOT}/x64/lib
 			${LIBPORTAUDIO_ROOT}/lib/x64 ${LIBPORTAUDIO_ROOT}/lib64
 			${LIBPORTAUDIO_ROOT}/lib ${LIBPORTAUDIO_ROOT})
-		set(_suffix _x86)
-	else ()
+		set(_suffix _x64)
+	else()
 		set(_subdirs ${LIBPORTAUDIO_ROOT}/x86 ${LIBPORTAUDIO_ROOT}/x86/lib
 			${LIBPORTAUDIO_ROOT}/lib/x86 ${LIBPORTAUDIO_ROOT}/lib32
 			${LIBPORTAUDIO_ROOT}/lib ${LIBPORTAUDIO_ROOT})
-		set(_suffix _x64)
+		set(_suffix _x86)
 	endif()
 
 	foreach(_lib ${LIBPORTAUDIO_SEARCH_LIBS})
 		list(APPEND _libs ${_lib})
 		list(APPEND _libs "${_lib}${_suffix}")
 	endforeach()
-
-#	message("LIBPORTAUDIO_DIR: ${LIBPORTAUDIO_DIR}")
-
+    
 	find_library(LIBPORTAUDIO_LIBRARY
 		NAMES ${_libs}
 		PATHS ${_subdirs})
