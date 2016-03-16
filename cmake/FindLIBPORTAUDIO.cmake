@@ -60,7 +60,6 @@ include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LIBPORTAUDIO_FOUND to TRUE
 # if all listed variables are TRUE
 find_package_handle_standard_args(LIBPORTAUDIO
-	DEFAULT_MSG
 	REQUIRED_VARS LIBPORTAUDIO_LIBRARIES LIBPORTAUDIO_INCLUDE_DIRS
 	VERSION_VAR LIBPORTAUDIO_VERSION)
 

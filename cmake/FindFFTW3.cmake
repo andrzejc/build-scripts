@@ -113,7 +113,6 @@ include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set FFTW3_FOUND to TRUE
 # if all listed variables are TRUE
 find_package_handle_standard_args(FFTW3
-	DEFAULT_MSG
 	REQUIRED_VARS FFTW3_LIBRARIES FFTW3_INCLUDE_DIRS
 	VERSION_VAR FFTW3_VERSION)
 
