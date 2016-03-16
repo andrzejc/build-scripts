@@ -54,8 +54,9 @@ set(LIBSNDFILE_INCLUDE_DIRS ${LIBSNDFILE_INCLUDE_DIR})
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LIBSNDFILE_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args(LIBSNDFILE  DEFAULT_MSG
-                                  LIBSNDFILE_LIBRARIES LIBSNDFILE_INCLUDE_DIRS
-                                  VERSION_VAR LIBSNDFILE_VERSION)
+find_package_handle_standard_args(LIBSNDFILE
+	DEFAULT_MSG
+	REQUIRED_VARS LIBSNDFILE_LIBRARIES LIBSNDFILE_INCLUDE_DIRS
+	VERSION_VAR LIBSNDFILE_VERSION)
 
 mark_as_advanced(LIBSNDFILE_INCLUDE_DIRS LIBSNDFILE_LIBRARIES)
