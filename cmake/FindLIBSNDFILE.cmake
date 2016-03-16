@@ -44,15 +44,18 @@ else ()
 		HINTS ${PC_LIBSNDFILE_INCLUDEDIR} ${PC_LIBSNDFILE_INCLUDE_DIRS}
 		PATH_SUFFIXES sndfile)
 
+	set(LIBSNDFILE_VERSION ${PC_LIBSNDFILE_VERSION})
 endif()
 
 set(LIBSNDFILE_LIBRARIES ${LIBSNDFILE_LIBRARY})
 set(LIBSNDFILE_INCLUDE_DIRS ${LIBSNDFILE_INCLUDE_DIR})
 
+
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LIBSNDFILE_FOUND to TRUE
 # if all listed variables are TRUE
 find_package_handle_standard_args(LIBSNDFILE  DEFAULT_MSG
-                                  LIBSNDFILE_LIBRARIES LIBSNDFILE_INCLUDE_DIRS)
+                                  LIBSNDFILE_LIBRARIES LIBSNDFILE_INCLUDE_DIRS
+                                  VERSION_VAR LIBSNDFILE_VERSION)
 
 mark_as_advanced(LIBSNDFILE_INCLUDE_DIRS LIBSNDFILE_LIBRARIES)

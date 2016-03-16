@@ -102,6 +102,8 @@ else ()
 			${PC_FFTW3D_INCLUDEDIR} ${PC_FFTW3D_INCLUDE_DIRS}
 			${PC_FFTW3L_INCLUDEDIR} ${PC_FFTW3L_INCLUDE_DIRS}
 		PATH_SUFFIXES fftw3)
+
+	set(FFTW3_VERSION ${PC_FFTW3D_VERSION})
 endif()
 
 set(FFTW3_LIBRARIES ${FFTW3_LIBRARY})
@@ -111,6 +113,7 @@ include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set FFTW3_FOUND to TRUE
 # if all listed variables are TRUE
 find_package_handle_standard_args(FFTW3  DEFAULT_MSG
-                                  FFTW3_LIBRARIES FFTW3_INCLUDE_DIRS)
+                                  FFTW3_LIBRARIES FFTW3_INCLUDE_DIRS
+                                  VERSION_VAR FFTW3_VERSION)
 
 mark_as_advanced(FFTW3_INCLUDE_DIRS FFTW3_LIBRARIES)
