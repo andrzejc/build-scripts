@@ -55,6 +55,7 @@ if (MSVC)
 		PATHS ${_subdirs}
 		PATH_SUFFIXES include fftw3 include/fftw3)
 
+	set(FFTW3_VERSION "3.${FFTW3_VERSION_MINOR}")
 else ()
 	find_package(PkgConfig)
 	pkg_check_modules(PC_FFTW3F QUIET fftw3f)
