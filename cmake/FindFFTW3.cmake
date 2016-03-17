@@ -6,11 +6,18 @@
 #  FFTW3_DEFINITIONS - Compiler switches required for using libsndfile
 
 if (MSVC)
-	set(FFTW3_ROOT $ENV{FFTW3_ROOT} CACHE PATH "Installation folder of FFTW3")
+	if(NOT FFTW3_DIR)
+		if(FFTW3_ROOT)
+			set(FFTW3_DIR ${FFTW3_ROOT})
+		elseif($ENV{FFTW3_ROOT})
+			set(FFTW3_DIR $ENV{FFTW3_ROOT})
+		endif()
+	endif()
+	set(FFTW3_DIR ${FFTW3_DIR} CACHE PATH "Installation folder of FFTW3")
 	foreach(_subdir x64 x86 x64/lib x86/lib lib/x64 lib/x86 lib32 lib64 lib "")
 #        message(status " FFTW3: Checking in ${FFTW3_ROOT}/${_subdir}")
 		file(GLOB _matches
-			"${FFTW3_ROOT}/${_subdir}/*${CMAKE_IMPORT_LIBRARY_SUFFIX}")
+			"${FFTW3_DIR}/${_subdir}/*${CMAKE_IMPORT_LIBRARY_SUFFIX}")
 #        message(status " FFTW3: Possible matches ${_matches}")
 		foreach(_match ${_matches})
 			get_filename_component(_name ${_match} NAME_WE)
@@ -27,13 +34,13 @@ if (MSVC)
 	endforeach()
 
 	if (CMAKE_CL_64)
-		set(_subdirs ${FFTW3_ROOT}/x64 ${FFTW3_ROOT}/x64/lib
-			${FFTW3_ROOT}/lib/x64 ${FFTW3_ROOT}/lib64 ${FFTW3_ROOT}/lib
-			${FFTW3_ROOT})
+		set(_subdirs ${FFTW3_DIR}/x64 ${FFTW3_DIR}/x64/lib
+			${FFTW3_DIR}/lib/x64 ${FFTW3_DIR}/lib64 ${FFTW3_DIR}/lib
+			${FFTW3_DIR})
 	else ()
-		set(_subdirs ${FFTW3_ROOT}/x86 ${FFTW3_ROOT}/x86/lib
-			${FFTW3_ROOT}/lib/x86 ${FFTW3_ROOT}/lib32 ${FFTW3_ROOT}/lib
-			${FFTW3_ROOT})
+		set(_subdirs ${FFTW3_DIR}/x86 ${FFTW3_DIR}/x86/lib
+			${FFTW3_DIR}/lib/x86 ${FFTW3_DIR}/lib32 ${FFTW3_DIR}/lib
+			${FFTW3_DIR})
 	endif()
 
 	find_library(FFTW3D_LIBRARY
@@ -53,7 +60,7 @@ if (MSVC)
 
 	find_path(FFTW3_INCLUDE_DIR fftw3.h
 		PATHS ${_subdirs}
-		PATH_SUFFIXES include fftw3 include/fftw3)
+		PATH_SUFFIXES include)
 
 	set(FFTW3_VERSION "3.${FFTW3_VERSION_MINOR}")
 else ()
@@ -101,8 +108,7 @@ else ()
 	find_path(FFTW3_INCLUDE_DIR fftw3.h
 		HINTS ${PC_FFTW3F_INCLUDEDIR} ${PC_FFTW3F_INCLUDE_DIRS}
 			${PC_FFTW3D_INCLUDEDIR} ${PC_FFTW3D_INCLUDE_DIRS}
-			${PC_FFTW3L_INCLUDEDIR} ${PC_FFTW3L_INCLUDE_DIRS}
-		PATH_SUFFIXES fftw3)
+			${PC_FFTW3L_INCLUDEDIR} ${PC_FFTW3L_INCLUDE_DIRS})
 
 	set(FFTW3_VERSION ${PC_FFTW3D_VERSION})
 endif()
