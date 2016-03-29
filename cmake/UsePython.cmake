@@ -34,15 +34,33 @@ function(py_compile)
         set(_py_compile_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
     endif()
 
+    # expand all directory paths to their contained *.py files
     foreach(_src ${_srcs})
         if(NOT IS_ABSOLUTE ${_src})
-            set(_rel ${_src})
-            get_filename_component(
-                _src "${CMAKE_CURRENT_SOURCE_DIR}/${_src}" ABSOLUTE)
-            set(_target "${_rel}${_PYSUFFIX}")
+            set(_abs "${CMAKE_CURRENT_SOURCE_DIR}/${_src}")
+        else()
+            set(_abs ${_src})
+        endif()
+
+        if(IS_DIRECTORY ${_abs})
+            file(GLOB_RECURSE _pysrcs RELATIVE ${_abs} "${_abs}/*.py")
+            foreach(_pysrc ${_pysrcs})
+                list(APPEND _exp "${_src}/${_pysrc}")
+            endforeach()
+        else()
+            list(APPEND _exp ${_src})
+        endif()
+    endforeach()
+
+    set(_srcs ${_exp})
+
+    # create compile command for each *.py file into *.pyc
+    foreach(_src ${_srcs})
+        if(NOT IS_ABSOLUTE ${_src})
+            set(_target "${_src}${_PYSUFFIX}")
+            set(_src "${CMAKE_CURRENT_SOURCE_DIR}/${_src}")
             set(_out "${_py_compile_OUTPUT_DIR}/${_target}")
         else()
-            set(_rel "")
             set(_target "${_src}${_PYSUFFIX}")
             set(_out "${_target}")
         endif()
@@ -53,6 +71,7 @@ function(py_compile)
         list(APPEND _outs ${_out})
     endforeach()
 
+    # create output directories
     list(REMOVE_DUPLICATES _dirs)
     foreach(_dir ${_dirs})
         file(MAKE_DIRECTORY ${_dir})
