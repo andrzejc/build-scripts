@@ -4,6 +4,10 @@ endif()
 if (POLICY CMP0054)
 	cmake_policy(SET CMP0054 OLD)
 endif()
+if (POLICY CMP0063)
+	# Honor visibility properties for all target types.
+	cmake_policy(SET CMP0063 NEW)
+endif()
 
 if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin CACHE
