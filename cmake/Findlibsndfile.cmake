@@ -1,67 +1,69 @@
 # - Try to find libsndfile
 # Once done this will define
-#  LIBSNDFILE_FOUND - System has libsndfile
-#  LIBSNDFILE_INCLUDE_DIRS - The libsndfile include directories
-#  LIBSNDFILE_LIBRARIES - The libraries needed to use libsndfile
-#  LIBSNDFILE_DEFINITIONS - Compiler switches required for using libsndfile
+#  libsndfile_FOUND - System has libsndfile
+#  libsndfile_INCLUDE_DIRS - The libsndfile include directories
+#  libsndfile_LIBRARIES - The libraries needed to use libsndfile
+#  libsndfile_DEFINITIONS - Compiler switches required for using libsndfile
 
-set(LIBSNDFILE_SEARCH_LIBS libsndfile sndfile libsndfile-1 sndfile-1
+set(libsndfile_SEARCH_LIBS libsndfile sndfile libsndfile-1 sndfile-1
 	libsndfile1 sndfile1)
-set(LIBSNDFILE_SEARCH_HEADERS sndfile.h)
+set(libsndfile_SEARCH_HEADERS sndfile.h)
 
 if (MSVC)
-	if(NOT DEFINED LIBSNDFILE_DIR)
+	if(NOT DEFINED libsndfile_DIR)
 		if(DEFINED LIBSNDFILE_ROOT)
-			set(LIBSNDFILE_DIR ${LIBSNDFILE_ROOT})
+			set(libsndfile_DIR ${LIBSNDFILE_ROOT})
 		elseif(DEFINED ENV{LIBSNDFILE_ROOT})
-			set(LIBSNDFILE_DIR $ENV{LIBSNDFILE_ROOT})
+			set(libsndfile_DIR $ENV{LIBSNDFILE_ROOT})
+		else()
+			set(libsndfile_DIR "libsndfile_DIR-NOTFOUND")
 		endif()
 	endif()
-	set(LIBSNDFILE_DIR ${LIBSNDFILE_DIR} CACHE
+	set(libsndfile_DIR "${libsndfile_DIR}" CACHE
 		PATH "Installation folder of libsndfile")
 
 	if (CMAKE_CL_64)
-		set(_subdirs ${LIBSNDFILE_DIR}/x64 ${LIBSNDFILE_DIR}/x64/lib
-			${LIBSNDFILE_DIR}/lib/x64 ${LIBSNDFILE_DIR}/lib64
-			${LIBSNDFILE_DIR}/lib ${LIBSNDFILE_DIR})
+		set(_subdirs ${libsndfile_DIR}/x64 ${libsndfile_DIR}/x64/lib
+			${libsndfile_DIR}/lib/x64 ${libsndfile_DIR}/lib64
+			${libsndfile_DIR}/lib ${libsndfile_DIR})
 	else ()
-		set(_subdirs ${LIBSNDFILE_DIR}/x86 ${LIBSNDFILE_DIR}/x86/lib
-			${LIBSNDFILE_DIR}/lib/x86 ${LIBSNDFILE_DIR}/lib32
-			${LIBSNDFILE_DIR}/lib ${LIBSNDFILE_DIR})
+		set(_subdirs ${libsndfile_DIR}/x86 ${libsndfile_DIR}/x86/lib
+			${libsndfile_DIR}/lib/x86 ${libsndfile_DIR}/lib32
+			${libsndfile_DIR}/lib ${libsndfile_DIR})
 	endif()
 
-	find_library(LIBSNDFILE_LIBRARY
-		NAMES ${LIBSNDFILE_SEARCH_LIBS}
+	find_library(libsndfile_LIBRARY
+		NAMES ${libsndfile_SEARCH_LIBS}
 		PATHS ${_subdirs})
 
-	find_path(LIBSNDFILE_INCLUDE_DIR ${LIBSNDFILE_SEARCH_HEADERS}
+	find_path(libsndfile_INCLUDE_DIR ${libsndfile_SEARCH_HEADERS}
 		PATHS ${_subdirs}
 		PATH_SUFFIXES include)
 
 else ()
 	find_package(PkgConfig)
-	pkg_check_modules(PC_LIBSNDFILE QUIET sndfile)
-	set(LIBSNDFILE_DEFINITIONS ${PC_LIBSNDFILE_CFLAGS_OTHER})
+	pkg_check_modules(PC_libsndfile QUIET sndfile)
+	set(libsndfile_DEFINITIONS ${PC_libsndfile_CFLAGS_OTHER})
 
-	find_library(LIBSNDFILE_LIBRARY
-		NAMES PL_LIBSNDFILE_LIBRARIES ${LIBSNDFILE_SEARCH_LIBS}
-		HINTS ${PC_LIBSNDFILE_LIBDIR} ${PC_LIBSNDFILE_LIBRARY_DIRS})
+	find_library(libsndfile_LIBRARY
+		NAMES ${PC_libsndfile_LIBRARIES} ${libsndfile_SEARCH_LIBS}
+		HINTS ${PC_libsndfile_LIBDIR} ${PC_libsndfile_LIBRARY_DIRS})
 
-	find_path(LIBSNDFILE_INCLUDE_DIR ${LIBSNDFILE_SEARCH_HEADERS}
-		HINTS ${PC_LIBSNDFILE_INCLUDEDIR} ${PC_LIBSNDFILE_INCLUDE_DIRS})
+	find_path(libsndfile_INCLUDE_DIR ${libsndfile_SEARCH_HEADERS}
+		HINTS ${PC_libsndfile_INCLUDEDIR} ${PC_libsndfile_INCLUDE_DIRS})
 
-	set(LIBSNDFILE_VERSION ${PC_LIBSNDFILE_VERSION})
+	set(libsndfile_VERSION ${PC_libsndfile_VERSION})
 endif()
 
-set(LIBSNDFILE_LIBRARIES ${LIBSNDFILE_LIBRARY})
-set(LIBSNDFILE_INCLUDE_DIRS ${LIBSNDFILE_INCLUDE_DIR})
+set(libsndfile_LIBRARIES ${libsndfile_LIBRARY})
+set(libsndfile_INCLUDE_DIRS ${libsndfile_INCLUDE_DIR})
 
 
 include(FindPackageHandleStandardArgs)
-# handle the QUIETLY and REQUIRED arguments and set LIBSNDFILE_FOUND to TRUE
+# handle the QUIETLY and REQUIRED arguments and set libsndfile_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args(LIBSNDFILE
-	REQUIRED_VARS LIBSNDFILE_LIBRARIES LIBSNDFILE_INCLUDE_DIRS
-	VERSION_VAR LIBSNDFILE_VERSION)
+find_package_handle_standard_args(libsndfile
+	REQUIRED_VARS libsndfile_LIBRARIES libsndfile_INCLUDE_DIRS
+	VERSION_VAR libsndfile_VERSION)
 
-mark_as_advanced(LIBSNDFILE_INCLUDE_DIRS LIBSNDFILE_LIBRARIES)
+mark_as_advanced(libsndfile_INCLUDE_DIRS libsndfile_LIBRARIES)
