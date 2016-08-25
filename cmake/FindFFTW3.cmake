@@ -74,14 +74,14 @@ else ()
         set(_fstem "fftw3${_SUFFIXF}")
 
         if(PkgConfig_FOUND)
-			pkg_check_modules("PC_FFTW3${_SUFFIXV}" QUIET ${_fstem})
+            pkg_check_modules("PC_${_stem}" QUIET ${_fstem})
         endif()
 
         find_library(${_library}
             NAMES
                 "${_fstem}"
                 "lib${_fstem}"
-            HINTS "${PC_FFTW3${_SUFFIXV}_LIBRARY_DIRS}")
+            HINTS "${PC_${_stem}_LIBRARY_DIRS}")
 
         if("${_library}")
 #            message(STATUS "found: ${${_library}}")
@@ -91,15 +91,16 @@ else ()
                 NAMES
                     "${_fstem}_threads"
                     "lib${_fstem}_threads"
-                HINTS "${PC_FFTW3${_SUFFIXV}_LIBRARY_DIRS}")
+                HINTS "${PC_${_stem}_LIBRARY_DIRS}")
 
             if("${_threads_library}")
 #                message(STATUS "found: ${${_threads_library}}")
                 list(APPEND FFTW3_LIBRARIES "${${_threads_library}}")
             endif()
 
-            set("FFTW3${_SUFFIXV}_DEFINITIONS"
-                    "${PC_FFTW3${_SUFFIXV}_CFLAGS_OTHER}")
+            set("${_stem}_DEFINITIONS"
+                    "${PC_${_stem}_CFLAGS_OTHER}")
+            list(APPEND FFTW3_DEFINITIONS "${${_stem}_DEFINITIONS}")
         endif()
     endmacro()
 
@@ -120,6 +121,7 @@ else ()
             ${PC_FFTW3L_INCLUDE_DIRS}
             ${PC_FFTW3Q_INCLUDE_DIRS})
 
+    list(REMOVE_DUPLICATES FFTW3_DEFINITIONS)
     set(FFTW3_VERSION ${PC_FFTW3D_VERSION})
 endif()
 
@@ -156,6 +158,7 @@ if(FFTW3_FOUND AND NOT TARGET fftw3)
             set_target_properties(${_fstem} PROPERTIES
                     IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                     IMPORTED_LOCATION "${${_library}}"
+                    INTERFACE_COMPILE_OPTIONS "${${_stem}_DEFINITIONS}"
                     INTERFACE_INCLUDE_DIRECTORIES ${FFTW3_INCLUDE_DIR})
 #            message(STATUS "IMPORTED_LOCATION ${${_library}}")
 #            message(STATUS "INTERFACE_INCLUDE_DIRECTORIES ${FFTW3_INCLUDE_DIR}")

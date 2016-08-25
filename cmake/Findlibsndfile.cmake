@@ -73,7 +73,7 @@ if(libsndfile_FOUND AND NOT TARGET libsndfile)
     add_library(libsndfile UNKNOWN IMPORTED)
     set_target_properties(libsndfile PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${libsndfile_INCLUDE_DIR}"
-            INTERFACE_COMPILE_DEFINITIONS "${libsndfile_DEFINITIONS}"
+            INTERFACE_COMPILE_OPTIONS "${libsndfile_DEFINITIONS}"
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
             IMPORTED_LOCATION "${libsndfile_LIBRARY}")
 endif()

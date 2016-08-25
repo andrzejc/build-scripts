@@ -84,7 +84,7 @@ if(PortAudio_FOUND AND NOT TARGET PortAudio)
     add_library(PortAudio UNKNOWN IMPORTED)
     set_target_properties(PortAudio PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${PortAudio_INCLUDE_DIR}"
-            INTERFACE_COMPILE_DEFINITIONS "${PortAudio_DEFINITIONS}"
+            INTERFACE_COMPILE_OPTIONS "${PortAudio_DEFINITIONS}"
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
             IMPORTED_LOCATION "${PortAudio_LIBRARY}")
 endif()
