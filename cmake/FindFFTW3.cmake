@@ -74,7 +74,7 @@ else ()
         set(_fstem "fftw3${_SUFFIXF}")
 
         if(PkgConfig_FOUND)
-            pkg_check_modules("PC_FFTW3${_SUFFIXV}" QUIET "fftw3${_SUFFIXF}")
+			pkg_check_modules("PC_FFTW3${_SUFFIXV}" QUIET ${_fstem})
         endif()
 
         find_library(${_library}
@@ -108,18 +108,19 @@ else ()
 #            if(_comp STREQUAL "fftw3")
 #                _fftw3_lib(D "")
 
+    _fftw3_lib(D "")
     _fftw3_lib(F f)
     _fftw3_lib(L l)
     _fftw3_lib(Q q)
 
     find_path(FFTW3_INCLUDE_DIR fftw3.h
-		HINTS
+        HINTS
             ${PC_FFTW3F_INCLUDE_DIRS}
             ${PC_FFTW3D_INCLUDE_DIRS}
             ${PC_FFTW3L_INCLUDE_DIRS}
             ${PC_FFTW3Q_INCLUDE_DIRS})
 
-	set(FFTW3_VERSION ${PC_FFTW3D_VERSION})
+    set(FFTW3_VERSION ${PC_FFTW3D_VERSION})
 endif()
 
 if(NOT FFTW3_LIBRARIES)
@@ -132,8 +133,8 @@ include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set FFTW3_FOUND to TRUE
 # if all listed variables are TRUE
 find_package_handle_standard_args(FFTW3
-	REQUIRED_VARS FFTW3_LIBRARIES FFTW3_INCLUDE_DIRS
-	VERSION_VAR FFTW3_VERSION)
+    REQUIRED_VARS FFTW3_LIBRARIES FFTW3_INCLUDE_DIRS
+    VERSION_VAR FFTW3_VERSION)
 
 mark_as_advanced(FFTW3_INCLUDE_DIRS FFTW3_LIBRARIES
         FFTW3F_LIBRARY FFTW3F_THREADS_LIBRARY
