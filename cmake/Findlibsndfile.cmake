@@ -66,4 +66,14 @@ find_package_handle_standard_args(libsndfile
 	REQUIRED_VARS libsndfile_LIBRARIES libsndfile_INCLUDE_DIRS
 	VERSION_VAR libsndfile_VERSION)
 
-mark_as_advanced(libsndfile_INCLUDE_DIRS libsndfile_LIBRARIES)
+mark_as_advanced(libsndfile_INCLUDE_DIRS libsndfile_LIBRARIES
+        libsndfile_LIBRARY libsndfile_INCLUDE_DIR)
+
+if(libsndfile_FOUND AND NOT TARGET libsndfile)
+    add_library(libsndfile UNKNOWN IMPORTED)
+    set_target_properties(libsndfile PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${libsndfile_INCLUDE_DIR}"
+            INTERFACE_COMPILE_DEFINITIONS "${libsndfile_DEFINITIONS}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+            IMPORTED_LOCATION "${libsndfile_LIBRARY}")
+endif()

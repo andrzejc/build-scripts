@@ -7,30 +7,24 @@
 
 if (MSVC)
 	if(NOT DEFINED FFTW3_DIR)
-#        message(status " FFTW3: no FFTW3_DIR")
 		if(DEFINED FFTW3_ROOT)
-#            message(status " FFTW3: FFTW3_ROOT present ${FFTW3_ROOT}")
 			set(FFTW3_DIR ${FFTW3_ROOT})
 		elseif(DEFINED ENV{FFTW3_ROOT})
-#            message(status " FFTW3: env FFTW3_ROOT present $ENV{FFTW3_ROOT}")
 			set(FFTW3_DIR $ENV{FFTW3_ROOT})
 		else()
 			set(FFTW3_DIR "FFTW3_DIR-NOTFOUND")
 		endif()
 	endif()
 	set(FFTW3_DIR "${FFTW3_DIR}" CACHE PATH "Installation folder of FFTW3")
-#    message(status " FFTW3: FFTW3_DIR set to ${FFTW3_DIR}")
+
+	# Parse import library name to get FFTW3 minor version number
 	foreach(_subdir x64 x86 x64/lib x86/lib lib/x64 lib/x86 lib32 lib64 lib "")
-#        message(status " FFTW3: Checking in ${FFTW3_DIR}/${_subdir}")
 		file(GLOB _matches
 			"${FFTW3_DIR}/${_subdir}/*${CMAKE_IMPORT_LIBRARY_SUFFIX}")
-#        message(status " FFTW3: Possible matches ${_matches}")
 		foreach(_match ${_matches})
 			get_filename_component(_name ${_match} NAME_WE)
-#            message(status " Checking file ${_name}")
-			if(${_name} MATCHES "^libfftw3-([0-9]+)")
-				set(FFTW3_VERSION_MINOR ${CMAKE_MATCH_1})
-#                message(status " FFTW3: Found ${_name}, assuming minor version ${FFTW3_VERSION_MINOR}")
+			if(${_name} MATCHES "^(lib)?fftw3[flq]?-([0-9]+)")
+				set(FFTW3_VERSION_MINOR ${CMAKE_MATCH_2})
 				break()
 			endif()
 		endforeach()
@@ -49,20 +43,21 @@ if (MSVC)
 			${FFTW3_DIR})
 	endif()
 
-	find_library(FFTW3D_LIBRARY
-		NAMES "libfftw3-${FFTW3_VERSION_MINOR}"
-		PATHS ${_subdirs})
+    macro(_fftw3_lib _SUFFIXV _SUFFIXF)
+        find_library("FFTW3${_SUFFIXV}_LIBRARY"
+                NAMES
+                    "libfftw3${_SUFFIXF}-${FFTW3_VERSION_MINOR}"
+                    "fftw3${_SUFFIXF}-${FFTW3_VERSION_MINOR}"
+                PATHS ${_subdirs})
+        if("${FFTW3${_SUFFIXV}_LIBRARY}")
+            list(APPEND FFTW3_LIBRARIES "${FFTW3${_SUFFIXV}_LIBRARY}")
+        endif()
+    endmacro()
 
-	find_library(FFTW3F_LIBRARY
-		NAMES "libfftw3f-${FFTW3_VERSION_MINOR}"
-		PATHS ${_subdirs})
-
-	find_library(FFTW3L_LIBRARY
-		NAMES "libfftw3l-${FFTW3_VERSION_MINOR}"
-		PATHS ${_subdirs})
-
-	list(APPEND FFTW3_LIBRARY ${FFTW3F_LIBRARY}
-		${FFTW3D_LIBRARY} ${FFTW3L_LIBRARY})
+    _fftw3_lib(D "")
+    _fftw3_lib(F f)
+    _fftw3_lib(L l)
+    _fftw3_lib(Q q)
 
 	find_path(FFTW3_INCLUDE_DIR fftw3.h
 		PATHS ${_subdirs}
@@ -71,55 +66,66 @@ if (MSVC)
 	set(FFTW3_VERSION "3.${FFTW3_VERSION_MINOR}")
 else ()
 	find_package(PkgConfig)
-	pkg_check_modules(PC_FFTW3F QUIET fftw3f)
 
-	find_library(FFTW3F_LIBRARY
-		NAMES fftw3f libfftw3f
-		HINTS ${PC_FFTW3F_LIBDIR} ${PC_FFTW3F_LIBRARY_DIRS})
-	find_library(FFTW3F_THREADS_LIBRARY
-		NAMES fftw3f_threads libfftw3f_threads
-		HINTS ${PC_FFTW3F_LIBDIR} ${PC_FFTW3F_LIBRARY_DIRS})
-	if(FFTW3F_THREADS_LIBRARY)
-		list(APPEND FFTW3F_LIBRARY ${FFTW3F_THREADS_LIBRARY})
-	endif()
-	set(FFTW3F_DEFINITIONS ${PC_FFTW3F_CFLAGS_OTHER})
+    macro(_fftw3_lib _SUFFIXV _SUFFIXF)
+        set(_stem "FFTW3${_SUFFIXV}")
+        set(_threads_library "${_stem}_THREADS_LIBRARY")
+        set(_library "${_stem}_LIBRARY")
+        set(_fstem "fftw3${_SUFFIXF}")
 
-	pkg_check_modules(PC_FFTW3D QUIET fftw3)
-	find_library(FFTW3D_LIBRARY
-		NAMES fftw3 libfftw3
-		HINTS ${PC_FFTW3D_LIBDIR} ${PC_FFTW3D_LIBRARY_DIRS})
-	find_library(FFTW3D_THREADS_LIBRARY
-		NAMES fftw3_threads libfftw3_threads
-		HINTS ${PC_FFTW3D_LIBDIR} ${PC_FFTW3D_LIBRARY_DIRS})
-	if(FFTW3D_THREADS_LIBRARY)
-		list(APPEND FFTW3D_LIBRARY ${FFTW3D_THREADS_LIBRARY})
-	endif()
-	set(FFTW3D_DEFINITIONS ${PC_FFTW3D_CFLAGS_OTHER})
+        if(PkgConfig_FOUND)
+            pkg_check_modules("PC_FFTW3${_SUFFIXV}" QUIET "fftw3${_SUFFIXF}")
+        endif()
 
-	pkg_check_modules(PC_FFTW3L QUIET fftw3l)
-	find_library(FFTW3L_LIBRARY
-		NAMES fftw3l libfftw3l
-		HINTS ${PC_FFTW3L_LIBDIR} ${PC_FFTW3L_LIBRARY_DIRS})
-	find_library(FFTW3L_THREADS_LIBRARY
-		NAMES fftw3l_threads libfftw3l_threads
-		HINTS ${PC_FFTW3L_LIBDIR} ${PC_FFTW3L_LIBRARY_DIRS})
-	if(FFTW3L_THREADS_LIBRARY)
-		list(APPEND FFTW3L_LIBRARY ${FFTW3L_THREADS_LIBRARY})
-	endif()
-	set(FFTW3L_DEFINITIONS ${PC_FFTW3L_CFLAGS_OTHER})
+        find_library(${_library}
+            NAMES
+                "${_fstem}"
+                "lib${_fstem}"
+            HINTS "${PC_FFTW3${_SUFFIXV}_LIBRARY_DIRS}")
 
-	list(APPEND FFTW3_LIBRARY ${FFTW3F_LIBRARY}
-		${FFTW3D_LIBRARY} ${FFTW3L_LIBRARY})
+        if("${_library}")
+#            message(STATUS "found: ${${_library}}")
+            list(APPEND FFTW3_LIBRARIES "${${_library}}")
 
-	find_path(FFTW3_INCLUDE_DIR fftw3.h
-		HINTS ${PC_FFTW3F_INCLUDEDIR} ${PC_FFTW3F_INCLUDE_DIRS}
-			${PC_FFTW3D_INCLUDEDIR} ${PC_FFTW3D_INCLUDE_DIRS}
-			${PC_FFTW3L_INCLUDEDIR} ${PC_FFTW3L_INCLUDE_DIRS})
+            find_library(${_threads_library}
+                NAMES
+                    "${_fstem}_threads"
+                    "lib${_fstem}_threads"
+                HINTS "${PC_FFTW3${_SUFFIXV}_LIBRARY_DIRS}")
+
+            if("${_threads_library}")
+#                message(STATUS "found: ${${_threads_library}}")
+                list(APPEND FFTW3_LIBRARIES "${${_threads_library}}")
+            endif()
+
+            set("FFTW3${_SUFFIXV}_DEFINITIONS"
+                    "${PC_FFTW3${_SUFFIXV}_CFLAGS_OTHER}")
+        endif()
+    endmacro()
+
+#    if(FFTW3_FIND_COMPONENTS)
+#        foreach(_comp ${FFTW3_FIND_COMPONENTS})
+#            if(_comp STREQUAL "fftw3")
+#                _fftw3_lib(D "")
+
+    _fftw3_lib(F f)
+    _fftw3_lib(L l)
+    _fftw3_lib(Q q)
+
+    find_path(FFTW3_INCLUDE_DIR fftw3.h
+		HINTS
+            ${PC_FFTW3F_INCLUDE_DIRS}
+            ${PC_FFTW3D_INCLUDE_DIRS}
+            ${PC_FFTW3L_INCLUDE_DIRS}
+            ${PC_FFTW3Q_INCLUDE_DIRS})
 
 	set(FFTW3_VERSION ${PC_FFTW3D_VERSION})
 endif()
 
-set(FFTW3_LIBRARIES ${FFTW3_LIBRARY})
+if(NOT FFTW3_LIBRARIES)
+    set(FFTW3_LIBRARIES "FFTW3_LIBRARIES-NOTFOUND")
+endif()
+
 set(FFTW3_INCLUDE_DIRS ${FFTW3_INCLUDE_DIR})
 
 include(FindPackageHandleStandardArgs)
@@ -129,4 +135,44 @@ find_package_handle_standard_args(FFTW3
 	REQUIRED_VARS FFTW3_LIBRARIES FFTW3_INCLUDE_DIRS
 	VERSION_VAR FFTW3_VERSION)
 
-mark_as_advanced(FFTW3_INCLUDE_DIRS FFTW3_LIBRARIES)
+mark_as_advanced(FFTW3_INCLUDE_DIRS FFTW3_LIBRARIES
+        FFTW3F_LIBRARY FFTW3F_THREADS_LIBRARY
+        FFTW3D_LIBRARY FFTW3D_THREADS_LIBRARY
+        FFTW3L_LIBRARY FFTW3L_THREADS_LIBRARY
+        FFTW3Q_LIBRARY FFTW3Q_THREADS_LIBRARY
+        FFTW3_INCLUDE_DIR)
+
+if(FFTW3_FOUND AND NOT TARGET fftw3)
+    macro(_fftw3_component_target _SUFFIXV _SUFFIXF)
+        set(_stem "FFTW3${_SUFFIXV}")
+        set(_threads_library "${_stem}_THREADS_LIBRARY")
+        set(_library "${_stem}_LIBRARY")
+        set(_fstem "fftw3${_SUFFIXF}")
+#        message(STATUS "_fftw3_component_target ${_SUFFIX}")
+        if("${_library}")
+            add_library(${_fstem} UNKNOWN IMPORTED)
+#            message(STATUS "add_library(${_fstem})")
+            set_target_properties(${_fstem} PROPERTIES
+                    IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                    IMPORTED_LOCATION "${${_library}}"
+                    INTERFACE_INCLUDE_DIRECTORIES ${FFTW3_INCLUDE_DIR})
+#            message(STATUS "IMPORTED_LOCATION ${${_library}}")
+#            message(STATUS "INTERFACE_INCLUDE_DIRECTORIES ${FFTW3_INCLUDE_DIR}")
+            if("${_threads_library}")
+                add_library("${_fstem}_threads" UNKNOWN IMPORTED)
+#                message(STATUS "add_library(${_fstem}_threads)")
+                set_target_properties("${_fstem}_threads" PROPERTIES
+                        IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                        IMPORTED_LOCATION "${${_threads_library}}")
+#                message(STATUS "IMPORTED_LOCATION ${${_threads_library}}")
+                set_target_properties(${_fstem} PROPERTIES
+                        INTERFACE_LINK_LIBRARIES "${_fstem}_threads")
+            endif()
+        endif()
+    endmacro()
+
+    _fftw3_component_target(D "")
+    _fftw3_component_target(F f)
+    _fftw3_component_target(L l)
+    _fftw3_component_target(Q q)
+endif()
