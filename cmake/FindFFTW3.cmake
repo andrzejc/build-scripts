@@ -49,8 +49,10 @@ if (MSVC)
 					"libfftw3${_SUFFIXF}-${FFTW3_VERSION_MINOR}"
 					"fftw3${_SUFFIXF}-${FFTW3_VERSION_MINOR}"
 				PATHS ${_subdirs})
-		if("${FFTW3${_SUFFIXV}_LIBRARY}")
+		# message(STATUS "FFTW3${_SUFFIXV}_LIBRARY: ${FFTW3${_SUFFIXV}_LIBRARY}")
+		if (FFTW3${_SUFFIXV}_LIBRARY)
 			list(APPEND FFTW3_LIBRARIES "${FFTW3${_SUFFIXV}_LIBRARY}")
+			# message(STATUS "FFTW3_LIBRARIES: ${FFTW3_LIBRARIES}")
 		endif()
 	endmacro()
 
