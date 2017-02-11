@@ -63,9 +63,9 @@ if(WIN32)
 	set(_copy_dlls_name "copy_dlls-$<CONFIG>")
 	set(_list_file "${_copy_dlls_name}.list")
 	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${_list_file}"
-		CONTENT ${_deb_dlls} CONDITION $<CONFIG:Debug>)
+		CONTENT "${_deb_dlls}" CONDITION $<CONFIG:Debug>)
 	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${_list_file}"
-		CONTENT ${_opt_dlls} CONDITION $<NOT:$<CONFIG:Debug>>)
+		CONTENT "${_opt_dlls}" CONDITION $<NOT:$<CONFIG:Debug>>)
 
 	add_custom_command(
 		TARGET ${TARGET}
