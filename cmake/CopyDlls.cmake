@@ -72,7 +72,7 @@ if(WIN32)
 	add_custom_command(
 		TARGET ${TARGET}
 		POST_BUILD
-		COMMAND $ENV{COMSPEC} /c ${_cmd_file}
+		COMMAND ${_cmd_file}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		VERBATIM)
 
