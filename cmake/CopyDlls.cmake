@@ -59,21 +59,22 @@ if(WIN32)
 		endif()
 	endforeach()
 
-
-	set(_copy_dlls_name "copy_dlls-$<CONFIG>")
+	set(_copy_dlls_name "copy_dlls-${TARGET}-$<CONFIG>")
 	set(_list_file "${_copy_dlls_name}.list")
+	set(_cmd_file "${_copy_dlls_name}.cmd")
 	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${_list_file}"
 		CONTENT "${_deb_dlls}" CONDITION $<CONFIG:Debug>)
 	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${_list_file}"
 		CONTENT "${_opt_dlls}" CONDITION $<NOT:$<CONFIG:Debug>>)
+	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${_cmd_file}"
+		CONTENT "for /f \"tokens=*\" %%i in (${_list_file}) do (xcopy /Y /D \"%%i\" \"${_destination}\")")
 
 	add_custom_command(
 		TARGET ${TARGET}
 		POST_BUILD
-		COMMAND $ENV{COMSPEC} /c for /f \"delims-;\" %f in
-			\( ${_list_file} \) do
-			\(xcopy /y /d \"%f\" \"${_destination}\"\)
-		WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+		COMMAND $ENV{COMSPEC} /c ${_cmd_file}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		VERBATIM)
 
 endif(WIN32)
 endfunction()
