@@ -67,6 +67,7 @@ if (MSVC)
 
 	set(FFTW3_VERSION "3.${FFTW3_VERSION_MINOR}")
 else ()
+	set(FFT3_DEFINITIONS "")
 	find_package(PkgConfig)
 
 	macro(_fftw3_lib _SUFFIXV _SUFFIXF)
