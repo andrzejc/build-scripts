@@ -34,6 +34,7 @@ function(py_compile)
         set(_py_compile_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
     endif()
 
+    set(_exp)
     # expand all directory paths to their contained *.py files
     foreach(_src ${_srcs})
         if(NOT IS_ABSOLUTE ${_src})
@@ -54,6 +55,8 @@ function(py_compile)
 
     set(_srcs ${_exp})
 
+    set(_dirs)
+    set(_outs)
     # create compile command for each *.py file into *.pyc
     foreach(_src ${_srcs})
         if(NOT IS_ABSOLUTE ${_src})
