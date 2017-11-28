@@ -24,6 +24,7 @@ if(GIT_DESCRIBE_CHECK_RECONFIGURE)
 		# leave the mark
 		execute_process(COMMAND "${CMAKE_COMMAND}" -E touch "${gd_STAMP_FILE}.force_reconfigure")
 	endif()
+	return()
 endif(GIT_DESCRIBE_CHECK_RECONFIGURE)
 if(GIT_DESCRIBE_FORCE_RECONFIGURE)
 	if(EXISTS "${gd_STAMP_FILE}.force_reconfigure")
@@ -31,6 +32,7 @@ if(GIT_DESCRIBE_FORCE_RECONFIGURE)
 			WORKING_DIRECTORY "${gd_WORKING_DIRECTORY}")
 		message(FATAL_ERROR "aborting build due to FORCE_RECONFIGURE; tl;dr: just re-run build again; this is due to cyclic dependency in the configure/build process")
 	endif()
+	return()
 endif(GIT_DESCRIBE_FORCE_RECONFIGURE)
 
 set(GIT_DESCRIBE_MODULE_PATH "${CMAKE_CURRENT_LIST_FILE}")
@@ -127,7 +129,7 @@ function(git_describe prefix)
 			DEPENDS "${gd_WORKING_DIRECTORY}/.git/index"
 				"${gd_WORKING_DIRECTORY}/.git/HEAD"
 				"${gd_WORKING_DIRECTORY}/.git/logs/HEAD"
-			BYPRODUCTS "${out_path}.force_reconfigure"
+#			BYPRODUCTS "${out_path}.force_reconfigure"
 			COMMENT "Querying git-describe in '${gd_WORKING_DIRECTORY}' for project ${prefix} due to Git index change "
 			VERBATIM)
 		add_custom_command(OUTPUT "${out_path}.force_reconfigure.PHONY"
