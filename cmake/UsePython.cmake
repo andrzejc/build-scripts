@@ -50,14 +50,14 @@ macro(_py_compile_dir _DIR _PYSUFFIX _PYFLAGS)
 			"-Dpyc_SUFFIX=${_PYSUFFIX}"
 			-DUSE_PYTHON_LIST_PY_COMPILE=1
 			-P "${USE_PYTHON_MODULE_PATH}"
-		COMMENT "Generating Python module inventory"
+		COMMENT "Updating inventory for Python module '${_DIR}'"
 		VERBATIM)
 	add_custom_command(
 		OUTPUT "${_DIR}/.py_compile.done" "${_DIR}/.py_compile.done.PHONY"
 		COMMAND "${PYTHON_EXECUTABLE}" ${_PYFLAGS}
 				"${USE_PYTHON_MODULE_DIR}/use_python_compile.py" "${_DIR}"
 		DEPENDS "${_DIR}/.py_compile"
-		COMMENT "Precompiling Python module"
+		COMMENT "Precompiling Python module '${_DIR}'"
 		VERBATIM)
 	set_source_files_properties(
 		"${_DIR}/.py_compile.PHONY" "${_DIR}/.py_compile.done.PHONY"
