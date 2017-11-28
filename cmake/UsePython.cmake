@@ -223,7 +223,7 @@ function(py_run)
 	# TODO we should check if only one script is present
 	set(cmd ${scripts})
 	list(APPEND cmd ${pyr_COMMAND} ${pyr_UNPARSED_ARGUMENTS})
-	message(STATUS "cmd: ${cmd}")
+	# message(STATUS "cmd: ${cmd}")
 	add_custom_command(OUTPUT ${pyr_OUTPUT} TARGET ${pyr_TARGET}
 		DEPENDS ${pyr_DEPENDS}
 		COMMAND "${CMAKE_COMMAND}" -E env "PYTHONPATH=${pp}"
@@ -282,7 +282,7 @@ function(py_test)
 	# TODO we should check if only one script is present
 	set(cmd ${scripts})
 	list(APPEND cmd ${pyt_COMMAND} ${pyt_UNPARSED_ARGUMENTS})
-	message(STATUS "cmd: ${cmd}")
+	# message(STATUS "cmd: ${cmd}")
 	add_test(NAME "${pyt_NAME}"
 		COMMAND "${CMAKE_COMMAND}" -E env "PYTHONPATH=${pp}"
 			"${PYTHON_EXECUTABLE}" ${pyflags} ${cmd})
