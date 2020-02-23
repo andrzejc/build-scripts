@@ -25,9 +25,9 @@ add_test(NAME safe-download-sha1-file
 add_test(NAME safe-download-sha256-file
     COMMAND SafeDownload::Script "${TEST_DOWNLOAD_URL}" test sha256)
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/data-md5/makefile.md5" "${TEST_MD5}\n")
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/data-sha1/makefile.sha1" "${TEST_SHA1}\n")
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/data-sha256/makefile.sha256" "${TEST_SHA256}\n")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/data-md5/data.md5" "${TEST_MD5}\n")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/data-sha1/data.sha1" "${TEST_SHA1}\n")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/data-sha256/data.sha256" "${TEST_SHA256}\n")
 
 # Read hash from file whose name is inferred from URL with .hash-type extension.
 add_test(NAME safe-download-md5-auto
