@@ -33,7 +33,7 @@ add_custom_target(unpack-archive ALL
         portaudio-binaries-portaudio-19.6.0/libportaudio64bit.dll
 )
 
-add_test(dll2lib-x86
+add_test(NAME dll2lib-x86
     COMMAND "${DLL2LIB_SCRIPT}" portaudio-binaries-portaudio-19.6.0/libportaudio32bit.dll x86)
-add_test(dll2lib-x64
+add_test(NAME dll2lib-x64
     COMMAND "${DLL2LIB_SCRIPT}" portaudio-binaries-portaudio-19.6.0/libportaudio64bit.dll x64)
