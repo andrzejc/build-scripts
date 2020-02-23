@@ -1,6 +1,6 @@
-.vscode
-.idea
+/.vscode
+/.idea
 *.sln
 *.suo
 *.vcxproj.user
-
+/build

@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+## Download file with checksum verification.
+## safe-download <url> [<dir>] [<hash-file-or-inline>]
+set -eu
+set -o pipefail
+
+function safe_download {
+    local url="$1"
+    local url_no_query="${url%%\?*}"
+    local file_name="${url_no_query##*/}"
+    local dir="${2:-${PWD}}"
+    local hash="${3:-}"
+    local hash_type=
+    if [[ ! "${hash}" ]]; then
+        for t in sha256 sha1 md5; do
+            if [[ -f "${dir}/${file_name}.${t}" ]]; then
+                read -r hash < "${dir}/${file_name}.${t}"
+                hash_type="${t}"
+                break
+            fi
+        done
+        if [[ ! "${hash_type}" ]]; then
+            >&2 echo "safe-download: missing hash data for ${url}"
+            return 1
+        fi
+    else
+        if [[ -f "${hash}" ]]; then
+            read -r hash < "${hash}"
+        fi
+        case ${#hash} in
+        32) hash_type=md5 ;;
+        40) hash_type=sha1 ;;
+        64) hash_type=sha256 ;;
+        *)  >&2 echo "safe-download: invalid hash length for ${url}"
+            return 1 ;;
+        esac
+    fi
+    local temp_file=
+    temp_file=$(mktemp)
+    trap "rm -rf '${temp_file}'" EXIT
+    wget -O "${temp_file}" "${url}"
+    local file_hash=
+    # Note: openssl invoked this way seems to be most portable way to get hash between Linux/macOS versions
+    file_hash=$( openssl "${hash_type}" "${temp_file}" | cut -d' ' -f2 )
+    if [[ "${file_hash^^}" != "${hash^^}" ]]; then
+        >&2 echo "safe-download: checksum mismatch for ${url}"
+        return 1
+    fi
+    mkdir -p "${dir}"
+    mv "${temp_file}" "${dir}/${file_name}"
+    echo "${dir}/${file_name}"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    safe_download "$@"
+fi

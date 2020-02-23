@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+## Create import library (.lib) given its .dll file.
+set -eu
+set -o pipefail
+
+# TODO implement me
