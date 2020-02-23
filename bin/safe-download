@@ -15,6 +15,8 @@ function safe_download {
         for t in sha256 sha1 md5; do
             if [[ -f "${dir}/${file_name}.${t}" ]]; then
                 read -r hash < "${dir}/${file_name}.${t}"
+                # Strip <CR> if hash file created on Windows
+                hash="${hash%$\r}"
                 hash_type="${t}"
                 break
             fi
@@ -26,6 +28,7 @@ function safe_download {
     else
         if [[ -f "${hash}" ]]; then
             read -r hash < "${hash}"
+            hash="${hash%$\r}"
         fi
         case ${#hash} in
         32) hash_type=md5 ;;
