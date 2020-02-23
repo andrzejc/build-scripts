@@ -1,4 +1,4 @@
-find_program(SAFE_DOWNLOAD_SCRIPT safe-download)
+find_program(SAFE_DOWNLOAD_SCRIPT safe-download${SCRIPT_SUFFIX})
 if(NOT SAFE_DOWNLOAD_SCRIPT)
     message(FATAL_ERROR "safe-download script not found")
 endif()
