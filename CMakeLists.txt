@@ -9,5 +9,11 @@ project(BuildScriptsTests
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}")
 
+if(WIN32)
+    set(SCRIPT_SUFFIX .cmd)
+else()
+    set(SCRIPT_SUFFIX)
+endif()
+
 enable_testing()
 add_subdirectory(test)
