@@ -3,4 +3,32 @@
 set -eu
 set -o pipefail
 
-# TODO implement me
+function dll2lib {
+    local dll_path="$1"
+    local machine="${2:-}"
+    if [[ ! "${machine}" ]]; then
+        case "${PROCESSOR_ARCHITECTURE}" in
+            AMD64)  machine=x64 ;;
+            # TODO not sure of this??
+            IA64)   machine=x64 ;;
+            ARM64)  machine=ARM ;;
+            X86|x86)
+                case "${PROCESSOR_ARCHITEW6432:-}" in
+                    AMD64)  machine=x64 ;;
+                    *)      machine=x86 ;;
+                esac
+                ;;
+            *)
+                >&2 echo "dll2lib: unable to detect machine architecture"
+                return 1
+        esac
+    fi
+    local dll_name="${dll_path##*/}"
+    local dll_dir="${dll_path%/*}"
+    local this_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+    ( cd "${dll_dir}" && "${this_dir}/_dll2lib-internal.cmd" "${machine}" "${dll_name}" )
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    dll2lib "$@"
+fi
