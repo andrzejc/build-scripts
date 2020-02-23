@@ -11,7 +11,8 @@ REM
 REM Script inspired by http://stackoverflow.com/questions/9946322/how-to-generate-an-import-library-lib-file-from-a-dll
 
 REM The argument to vcvarsall doesn't really matter
-call "c:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+REM call "c:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+call "%VS140COMNTOOLS%..\..\VC\bin\vcvars64.bat"
 
 SETLOCAL
 if "%1"=="32" (set machine=x86) else (set machine=x64)
