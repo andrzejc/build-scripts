@@ -17,8 +17,8 @@
 #     -C "/C/Program Files/Mega-Nerd/libsndfile/include"
 # mv "/C/Program Files/Mega-Nerd/libsndfile/lib/libsndfile-1.dll" \
 #     "/C/Program Files/Mega-Nerd/libsndfile/bin"
-bin/safe-download http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w32-setup.exe \
+bin/safe-download http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe \
     install \
     f17f4d2e14d332b88b4ab9847d489f44e9e3406b
 # HACK: installer shows modal dialog box from subprocess sndfile-about.exe
-install/libsndfile-1.0.28-w32-setup.exe /VERYSILENT
+install/libsndfile-1.0.28-w64-setup.exe /VERYSILENT
