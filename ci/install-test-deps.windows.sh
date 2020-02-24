@@ -21,9 +21,6 @@ choco install ninja
 #     "/C/Program Files/Mega-Nerd/libsndfile/bin"
 
 function install_libsndfile {
-    # HACK: installer shows modal dialog box from subprocess sndfile-about.exe, but this is Windows
-    # native process and we can't get its pid (tasklist shows truncated commands so it doesn't help).
-    # Just wait a bit and kill the parent
     local url="$1"
     local hash="$2"
     local installer_file=
@@ -31,11 +28,14 @@ function install_libsndfile {
     temp_dir=$( mktemp -d )
     trap "rm -rf '${temp_dir}'" EXIT
     installer_file=$( bin/safe-download "${url}" "${temp_dir}" "${hash}" )
-    MSYS_NO_PATHCONV=1 "${installer_file}" /VERYSILENT /SUPPRESSMSGBOXES
-    # &
-    # local pid=$!
-    # sleep 10
-    # kill "${pid}"
+    # HACK: installer shows modal dialog box from subprocess sndfile-about.exe asking to donate
+    # (thank you, Erik de Castro Lopo, this is great for CI), but this is Windows
+    # native process and we can't get its pid (tasklist shows truncated commands so it doesn't help).
+    # Just wait a bit and kill the parent.
+    MSYS_NO_PATHCONV=1 "${installer_file}" /VERYSILENT &
+    local pid=$!
+    sleep 10
+    kill "${pid}"
 }
 
 case "${TARGET_PLATFORM:-x64}" in
