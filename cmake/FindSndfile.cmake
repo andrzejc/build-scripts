@@ -18,7 +18,7 @@ if(MSVC)
     else()
         set(program_files "C:/${program_files}")
     endif()
-    list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/Mega-Nerd/libsndfile/lib")
+    list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/Mega-Nerd/libsndfile")
     list(INSERT Sndfile_CANDIDATES 0 libsndfile-1)
 endif()
 
