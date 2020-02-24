@@ -17,19 +17,20 @@
 #     -C "/C/Program Files/Mega-Nerd/libsndfile/include"
 # mv "/C/Program Files/Mega-Nerd/libsndfile/lib/libsndfile-1.dll" \
 #     "/C/Program Files/Mega-Nerd/libsndfile/bin"
-bin/safe-download http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe \
-    install \
-    f17f4d2e14d332b88b4ab9847d489f44e9e3406b
 
-set -x
+function install_libsndfile {
+    # HACK: installer shows modal dialog box from subprocess sndfile-about.exe, but this is Windows
+    # native process and we can't get its pid (tasklist shows truncated commands so it doesn't help).
+    # Just wait a bit and kill the parent
+    local url="$1"
+    local hash="$2"
+    local installer_file=
+    installer_file=$( bin/safe-download "${url}" tmp "${hash}" )
+    "${installer_file}" /VERYSILENT &
+    local pid=$!
+    sleep 10
+    kill "${pid}"
+}
 
-# HACK: installer shows modal dialog box from subprocess sndfile-about.exe, but this is Windows
-# native process and we can't get its pid (tasklist shows truncated commands so it doesn't help).
-# Just wait a bit and kill the parent
-install/libsndfile-1.0.28-w64-setup.exe /VERYSILENT &
-SF_PID=$!
-sleep 10
-ps -ef | grep $SF_PID | grep -v grep
-kill "${SF_PID}"
-
-set +x
+install_libsndfile http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe 3783e513d735d1526f19a32a63991026
+install_libsndfile http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w32-setup.exe 443a2a2890969778e8f9fe6a146c0595
