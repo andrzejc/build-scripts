@@ -34,4 +34,7 @@ function install_libsndfile {
 }
 
 install_libsndfile http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe 3783e513d735d1526f19a32a63991026
+ls -l "/c/Program Files/Mega-Nerd/libsndfile/lib" "/c/Program Files/Mega-Nerd/libsndfile/include"
+
 install_libsndfile http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w32-setup.exe 443a2a2890969778e8f9fe6a146c0595
+ls -l "/c/Program Files (x86)/Mega-Nerd/libsndfile/lib" "/c/Program Files (x86)/Mega-Nerd/libsndfile/include"
