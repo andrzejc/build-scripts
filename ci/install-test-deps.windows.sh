@@ -28,7 +28,7 @@ install/libsndfile-1.0.28-w64-setup.exe /VERYSILENT &
 SF_PID=
 while [[ ! "${SF_PID}" ]]; do
     sleep 1
-    ps -ef # | grep -i sndfile-about | grep -v grep
+    tasklist # | grep -i sndfile-about | grep -v grep
     echo foo
     SF_PID=$( ps -ef | grep -i sndfile-about | grep -v grep | tr -s ' ' | cut -d' ' -f2 )
 done
