@@ -27,11 +27,15 @@ function install_libsndfile {
     local url="$1"
     local hash="$2"
     local installer_file=
-    installer_file=$( bin/safe-download "${url}" tmp "${hash}" )
-    MSYS_NO_PATHCONV=1 "${installer_file}" /VERYSILENT /SUPPRESSMSGBOXES &
-    local pid=$!
-    sleep 10
-    kill "${pid}"
+    local temp_dir=
+    temp_dir=$( mktemp -d )
+    trap "rm -rf '${temp_dir}'" EXIT
+    installer_file=$( bin/safe-download "${url}" "${temp_dir}" "${hash}" )
+    MSYS_NO_PATHCONV=1 "${installer_file}" /VERYSILENT /SUPPRESSMSGBOXES
+    # &
+    # local pid=$!
+    # sleep 10
+    # kill "${pid}"
 }
 
 case "${TARGET_PLATFORM:-x64}" in
