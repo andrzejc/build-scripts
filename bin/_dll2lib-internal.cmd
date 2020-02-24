@@ -10,13 +10,7 @@ REM Requires 'dumpbin' and 'lib' in PATH - run from VS developer prompt.
 REM
 REM Script inspired by http://stackoverflow.com/questions/9946322/how-to-generate-an-import-library-lib-file-from-a-dll
 
-REM The argument to vcvarsall doesn't really matter
-REM call "c:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
-echo "foo"
-dir "%VS140COMNTOOLS%..\..\VC"
-echo "bar"
-dir "%VS140COMNTOOLS%..\..\VC\bin"
-echo "baz"
+REM The argument to vcvarsall doesn't really matter - we just want lib and dumpbin in path
 call "%VS140COMNTOOLS%..\..\VC\vcvarsall.bat" amd64
 
 setlocal
