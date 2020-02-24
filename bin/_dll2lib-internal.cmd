@@ -12,7 +12,12 @@ REM Script inspired by http://stackoverflow.com/questions/9946322/how-to-generat
 
 REM The argument to vcvarsall doesn't really matter
 REM call "c:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
-call "%VS140COMNTOOLS%..\..\VC\bin\vcvars64.bat"
+echo "foo"
+dir "%VS140COMNTOOLS%..\..\VC"
+echo "bar"
+dir "%VS140COMNTOOLS%..\..\VC\bin"
+echo "baz"
+call "%VS140COMNTOOLS%..\..\VC\vcvarsall.bat" amd64
 
 setlocal
 set machine=%1

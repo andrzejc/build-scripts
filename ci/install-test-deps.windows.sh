@@ -13,4 +13,4 @@ cp install/libsndfile-binaries-1.0.27/libsndfile64bit.dll \
     "/C/Program Files/Mega-Nerd/libsndfile/lib/libsndfile-1.dll"
 bin/dll2lib "/C/Program Files/Mega-Nerd/libsndfile/lib/libsndfile-1.dll" x64
 tar -xf test/deps/libsndfile1-win64-include.tar.bz2 \
-    -C "/C/Program Files/Mega-Nerd/slibsndfile/include"
+    -C "/C/Program Files/Mega-Nerd/libsndfile/include"
