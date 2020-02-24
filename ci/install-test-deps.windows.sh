@@ -20,11 +20,17 @@
 bin/safe-download http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe \
     install \
     f17f4d2e14d332b88b4ab9847d489f44e9e3406b
+
+set -x
+
 # HACK: installer shows modal dialog box from subprocess sndfile-about.exe
 install/libsndfile-1.0.28-w64-setup.exe /VERYSILENT &
 SF_PID=
 while [[ ! "${SF_PID}" ]]; do
     sleep 1
-    SF_PID=$( ps -ef | grep sndfile-about.exe | grep -v grep | tr -s ' ' | cut -d' ' -f2 )
+    ps -ef | grep -i sndfile-about | grep -v grep
+    SF_PID=$( ps -ef | grep -i sndfile-about | grep -v grep | tr -s ' ' | cut -d' ' -f2 )
 done
 kill "${SF_PID}"
+
+set +x
