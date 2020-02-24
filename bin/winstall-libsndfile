@@ -3,7 +3,6 @@
 ## winstall-libsndfile <installer-url> <installer-hash>
 set -eu
 set -o pipefail
-set -x
 
 function winstall_libsndfile {
     local url="$1"
@@ -11,7 +10,7 @@ function winstall_libsndfile {
     local this_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
     local temp_dir=
     temp_dir=$( mktemp -d )
-    trap "rm -rf '${temp_dir}' || true" EXIT
+    trap "> /dev/null 2>&1 rm -rf '${temp_dir}' || true" EXIT
     local installer_file=
     installer_file=$( "${this_dir}/safe-download" "${url}" "${temp_dir}" "${hash}" )
     # HACK: installer shows modal dialog box from subprocess sndfile-about.exe asking to donate
