@@ -29,7 +29,7 @@ function install_libsndfile {
     installer_file=$( bin/safe-download "${url}" tmp "${hash}" )
     "${installer_file}" /VERYSILENT &
     local pid=$!
-    sleep 10
+    sleep 30
     kill "${pid}"
 }
 
