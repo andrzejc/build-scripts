@@ -23,15 +23,13 @@ bin/safe-download http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w6
 
 set -x
 
-# HACK: installer shows modal dialog box from subprocess sndfile-about.exe
+# HACK: installer shows modal dialog box from subprocess sndfile-about.exe, but this is Windows
+# native process and we can't get its pid (tasklist shows truncated commands so it doesn't help).
+# Just wait a bit and kill the parent
 install/libsndfile-1.0.28-w64-setup.exe /VERYSILENT &
-SF_PID=
-while [[ ! "${SF_PID}" ]]; do
-    sleep 1
-    MSYS_NO_PATHCONV=1 tasklist /v # | grep -i sndfile-about | grep -v grep
-    echo foo
-    SF_PID=$( ps -ef | grep -i sndfile-about | grep -v grep | tr -s ' ' | cut -d' ' -f2 )
-done
+SF_PID=$!
+sleep 10
+ps -ef | grep $SF_PID | grep -v grep
 kill "${SF_PID}"
 
 set +x
