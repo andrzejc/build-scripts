@@ -12,8 +12,13 @@ script:
 matrix:
   include:
   - os: linux
+    install:
+    - sudo apt-get install libsndfile1-dev portaudio19-dev
   - os: osx
+    install:
+    - HOMEBREW_NO_AUTO_UPDATE=1 brew install libsndfile portaudio
   - os: windows
     install:
     # Required for safe-download script
     - choco install openssl.light
+    - source ci/install-test-deps.windows.sh
