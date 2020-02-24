@@ -27,9 +27,9 @@ function install_libsndfile {
     local hash="$2"
     local installer_file=
     installer_file=$( bin/safe-download "${url}" tmp "${hash}" )
-    "${installer_file}" /VERYSILENT &
+    "${installer_file}" /VERYSILENT /SUPPRESSMSGBOXES &
     local pid=$!
-    sleep 30
+    sleep 120
     kill "${pid}"
 }
 
