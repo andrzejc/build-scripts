@@ -1,98 +1,51 @@
-# - Try to find libsndfile
-# Once done this will define
-#  SndFile_FOUND - System has libsndfile
-#  SndFile_INCLUDE_DIRS - The libsndfile include directories
-#  SndFile_LIBRARIES - The libraries needed to use libsndfile
-#  SndFile_DEFINITIONS - Compiler switches required for using libsndfile
 
+set(Sndfile_CANDIDATES sndfile libsndfile)
 if(MSVC)
-    find_library(SNDFILE_LIBS libsndfile-1 HINTS "${CMAKE_SOURCE_DIR}/deps")
-    find_path(SNDFILE_INCLUDE_DIR sndfile.h HINTS "${CMAKE_SOURCE_DIR}/deps")
-else()
-    find_library(SNDFILE_LIBS sndfile)
-    find_path(SNDFILE_INCLUDE_DIR sndfile.h)
+    # Check default installation of http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe & w32 version.
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(program_files "Program Files")
+    else()
+        if(ENV{PROCESSOR_ARCHITECTURE} MATCHES 64 OR ENV{PROCESSOR_ARCHITEW6432} MATCHES 64)
+            # 32bit target on 64bit Windows
+            set(program_files "Program Files (x86)")
+        else()
+            # 32bit target on 32bit Windows
+            set(program_files "Program Files")
+        endif()
+    endif()
+    if(DEFINED ENV{SystemDrive})
+        set(program_files "$ENV{SystemDrive}/${program_files}")
+    else()
+        set(program_files "C:/${program_files}")
+    endif()
+    list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/Mega-Nerd/libsndfile/lib")
+    list(INSERT Sndfile_CANDIDATES 0 libsndfile-1)
+endif()
+
+find_package(PkgConfig QUIET)
+pkg_check_modules(PC_Sndfile QUIET sndfile)
+
+find_path(Sndfile_INCLUDE_DIR NAMES sndfile.h HINTS ${PC_Sndfile_INCLUDEDIR})
+find_library(Sndfile_LIBRARY NAMES ${PC_Sndfile_LIBRARIES} ${Sndfile_CANDIDATES} HINTS ${PC_Sndfile_LIBDIR})
+
+mark_as_advanced(Sndfile_INCLUDE_DIR Sndfile_LIBRARY)
+set(Sndfile_VERSION_ARG)
+if(PC_Sndfile_VERSION)
+    set(Sndfile_VERSION_ARG VERSION_VAR PC_Sndfile_VERSION)
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Sndfile REQUIRED_VARS SNDFILE_LIBS SNDFILE_INCLUDE_DIR)
+find_package_handle_standard_args(Sndfile REQUIRED_VARS Sndfile_LIBRARY Sndfile_INCLUDE_DIR ${Sndfile_VERSION_ARG})
 
-if(Sndfile_FOUND AND NOT TARGET Sndfile::libsndfile)
-    add_library(Sndfile::libsndfile INTERFACE IMPORTED)
-    set_target_properties(Sndfile::libsndfile PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${SNDFILE_INCLUDE_DIR}"
-        INTERFACE_LINK_LIBRARIES "${SNDFILE_LIBS}"
-    )
-endif()
-
-set(SndFile_SEARCH_LIBS libsndfile sndfile libsndfile-1 sndfile-1
-	libsndfile1 sndfile1)
-set(SndFile_SEARCH_HEADERS sndfile.h)
-
-if (MSVC)
-	if(NOT DEFINED SndFile_DIR)
-		if(DEFINED SndFile_ROOT)
-			set(SndFile_DIR ${SndFile_ROOT})
-		elseif(DEFINED ENV{LIBSNDFILE_ROOT})
-			set(SndFile_DIR $ENV{LIBSNDFILE_ROOT})
-		else()
-			set(SndFile_DIR "SndFile_DIR-NOTFOUND")
-		endif()
-	endif()
-	set(SndFile_DIR "${SndFile_DIR}" CACHE
-		PATH "Installation folder of libsndfile")
-
-	if (CMAKE_CL_64)
-		set(_subdirs ${SndFile_DIR}/x64 ${SndFile_DIR}/x64/lib
-			${SndFile_DIR}/lib/x64 ${SndFile_DIR}/lib64
-			${SndFile_DIR}/lib ${SndFile_DIR})
-	else ()
-		set(_subdirs ${SndFile_DIR}/x86 ${SndFile_DIR}/x86/lib
-			${SndFile_DIR}/lib/x86 ${SndFile_DIR}/lib32
-			${SndFile_DIR}/lib ${SndFile_DIR})
-	endif()
-
-	find_library(SndFile_LIBRARY
-		NAMES ${SndFile_SEARCH_LIBS}
-		PATHS ${_subdirs})
-
-	find_path(SndFile_INCLUDE_DIR ${SndFile_SEARCH_HEADERS}
-		PATHS ${_subdirs}
-		PATH_SUFFIXES include)
-
-else ()
-	find_package(PkgConfig)
-	pkg_check_modules(PC_SndFile QUIET sndfile)
-	set(SndFile_DEFINITIONS ${PC_SndFile_CFLAGS_OTHER})
-
-	find_library(SndFile_LIBRARY
-		NAMES ${PC_SndFile_LIBRARIES} ${SndFile_SEARCH_LIBS}
-		HINTS ${PC_SndFile_LIBDIR} ${PC_SndFile_LIBRARY_DIRS})
-
-	find_path(SndFile_INCLUDE_DIR ${SndFile_SEARCH_HEADERS}
-		HINTS ${PC_SndFile_INCLUDEDIR} ${PC_SndFile_INCLUDE_DIRS})
-
-	set(SndFile_VERSION ${PC_SndFile_VERSION})
-endif()
-
-set(SndFile_LIBRARIES ${SndFile_LIBRARY})
-set(SndFile_INCLUDE_DIRS ${SndFile_INCLUDE_DIR})
-
-
-include(FindPackageHandleStandardArgs)
-# handle the QUIETLY and REQUIRED arguments and set SndFile_FOUND to TRUE
-# if all listed variables are TRUE
-find_package_handle_standard_args(SndFile
-	REQUIRED_VARS SndFile_LIBRARIES SndFile_INCLUDE_DIRS
-	VERSION_VAR SndFile_VERSION)
-
-mark_as_advanced(SndFile_INCLUDE_DIRS SndFile_LIBRARIES
-	SndFile_LIBRARY SndFile_INCLUDE_DIR)
-
-if(SndFile_FOUND AND NOT TARGET sndfile)
-	add_library(sndfile UNKNOWN IMPORTED)
-	set_target_properties(sndfile PROPERTIES
-			INTERFACE_INCLUDE_DIRECTORIES "${SndFile_INCLUDE_DIR}"
-			INTERFACE_COMPILE_OPTIONS "${SndFile_DEFINITIONS}"
-			IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-			IMPORTED_LOCATION "${SndFile_LIBRARY}")
+if(Sndfile_FOUND)
+    set(Sndfile_INCLUDE_DIRS "${Sndfile_INCLUDE_DIR}")
+    set(Sndfile_LIBRARIES "${Sndfile_LIBRARY}")
+    if(NOT TARGET Sndfile::libsndfile)
+        add_library(Sndfile::libsndfile UNKNOWN IMPORTED)
+        set_target_properties(Sndfile::libsndfile PROPERTIES
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+            INTERFACE_INCLUDE_DIRECTORIES "${Sndfile_INCLUDE_DIR}"
+            IMPORTED_LOCATION "${Sndfile_LIBRARY}"
+        )
+    endif()
 endif()
