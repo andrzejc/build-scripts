@@ -20,14 +20,13 @@ if(MSVC)
     endif()
     list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/Mega-Nerd/libsndfile")
     list(INSERT Sndfile_CANDIDATES 0 libsndfile-1)
-    message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 endif()
 
 find_package(PkgConfig QUIET)
 pkg_check_modules(PC_Sndfile QUIET sndfile)
 
 find_path(Sndfile_INCLUDE_DIR NAMES sndfile.h HINTS ${PC_Sndfile_INCLUDEDIR})
-find_library(Sndfile_LIBRARY NAMES ${Sndfile_CANDIDATES} HINTS ${PC_Sndfile_LIBDIR})
+find_library(Sndfile_LIBRARY NAMES ${PC_Sndfile_LIBRARIES} ${Sndfile_CANDIDATES} HINTS ${PC_Sndfile_LIBDIR})
 
 mark_as_advanced(Sndfile_INCLUDE_DIR Sndfile_LIBRARY)
 set(Sndfile_VERSION_ARG)

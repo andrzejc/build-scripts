@@ -8,7 +8,7 @@ install:
 
 script:
 - mkdir build && cd build
-- cmake ..
+- cmake ${TARGET_PLATFORM:+-A ${TARGET_PLATFORM}} ..
 - cmake --build . --config RelWithDebInfo
 - ctest --output-on-failure -C RelWithDebInfo
 
@@ -17,3 +17,8 @@ matrix:
   - os: osx
   - os: linux
   - os: windows
+    name: Win32
+    env: TARGET_PLATFORM=Win32
+  - os: windows
+    name: Win64
+    env: TARGET_PLATFORM=x64

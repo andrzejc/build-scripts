@@ -1,6 +1,7 @@
 
 # Required for safe-download script
 choco install openssl.light
+choco install ninja
 
 # Emulate installation of libsndfile via binary installer
 # bin/safe-download \
@@ -33,8 +34,12 @@ function install_libsndfile {
     kill "${pid}"
 }
 
-install_libsndfile http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe 3783e513d735d1526f19a32a63991026
-ls -l "/c/Program Files/Mega-Nerd/libsndfile/lib" "/c/Program Files/Mega-Nerd/libsndfile/include"
-
-install_libsndfile http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w32-setup.exe 443a2a2890969778e8f9fe6a146c0595
-ls -l "/c/Program Files (x86)/Mega-Nerd/libsndfile/lib" "/c/Program Files (x86)/Mega-Nerd/libsndfile/include"
+case "${TARGET_PLATFORM:-x64}" in
+x64)
+    install_libsndfile http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe 3783e513d735d1526f19a32a63991026 ;;
+Win32)
+    install_libsndfile http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w32-setup.exe 443a2a2890969778e8f9fe6a146c0595 ;;
+*)
+    >&2 echo "Installation of libsndfile for this target is not supported"
+    return 1 ;;
+esac
