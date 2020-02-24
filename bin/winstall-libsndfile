@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+## Wrapper for libsndfile installer for Windows
+## winstall-libsndfile <installer-url> <installer-hash>
+set -eu
+set -o pipefail
+
+function winstall_libsndfile {
+    local url="$1"
+    local hash="$2"
+    local this_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+    local temp_dir=
+    temp_dir=$( mktemp -d )
+    trap "rm -rf '${temp_dir}'" EXIT
+    local installer_file=
+    installer_file=$( "${this_dir}/safe-download" "${url}" "${temp_dir}" "${hash}" )
+    # HACK: installer shows modal dialog box from subprocess sndfile-about.exe asking to donate
+    # (thank you, Erik de Castro Lopo, this is great for CI), but this is Windows
+    # native process and we can't get its pid (tasklist shows truncated commands so it doesn't help).
+    # Just wait a bit and kill the parent.
+    # TODO: do it properly one day
+    MSYS_NO_PATHCONV=1 "${installer_file}" /VERYSILENT &
+    local pid=$!
+    sleep 10
+    kill "${pid}"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    winstall_libsndfile "$@"
+fi
