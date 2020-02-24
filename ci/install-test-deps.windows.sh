@@ -1,5 +1,6 @@
-# Note: libsndfile installer from http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe is
-# unusable for use on CI because it shows "donate or f**k off" dialog box
+
+# Required for safe-download script
+choco install openssl.light
 
 # Emulate installation of libsndfile via binary installer
 # bin/safe-download \
