@@ -15,7 +15,28 @@ script:
 matrix:
   include:
   - os: osx
+    name: macOS 10.14 (10.15 SDK)
+    osx_image: xcode11.2
+  - os: osx
+    name: macOS 10.13 (10.14 SDK)
+    osx_image: xcode10.1
+  - os: osx
+    name: macOS 10.12 (10.13 SDK)
+    osx_image: xcode9.2
   - os: linux
+    name: Bionic-x64
+    dist: bionic
+  - os: linux
+    name: Xenial-x64
+    dist: xenial
+  - os: linux
+    name: Bionic-ARM64
+    dist: bionic
+    arch: arm64
+  - os: linux
+    name: Xenial-ARM64
+    dist: xenial
+    arch: arm64
   - os: windows
     name: Win32
     env: TARGET_PLATFORM=Win32
