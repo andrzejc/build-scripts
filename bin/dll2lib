@@ -6,6 +6,9 @@ set -o pipefail
 function dll2lib {
     local dll_path="$1"
     local machine="${2:-}"
+    if [[ "${machine}" == "Win32" ]]; then
+        machine=x86
+    fi
     if [[ ! "${machine}" ]]; then
         case "${PROCESSOR_ARCHITECTURE}" in
             AMD64)  machine=x64 ;;

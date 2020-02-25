@@ -62,7 +62,7 @@ function winstall_portaudio {
     source_dir=$( set +o pipefail; tar -tf "${source_archive}" | head -n1 )
     tar -xf "${source_archive}" -C "${temp_dir}"
 
-    cp "${temp_dir}/${source_dir}"/*.h "${install_dir}/include"
+    cp "${temp_dir}/${source_dir}/include"/*.h "${install_dir}/include"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
