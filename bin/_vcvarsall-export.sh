@@ -1,4 +1,5 @@
-
+## Run from within _vcvars-internal.cmd after vcvarsall.bat to export the updated variables
+## in msys/bash format to the outer calling shell
 commands=true
 for v in ExtensionSdkDir Framework40Version FrameworkDir FrameworkDIR64 FrameworkVersion FrameworkVersion64 INCLUDE LIB LIBPATH NETFXSDKDir PATH Platform UCRTVersion UniversalCRTSdkDir VCINSTALLDIR VisualStudioVersion VSINSTALLDIR WindowsLibPath WindowsSdkDir WindowsSDKLibVersion WindowsSDKVersion WindowsSDK_ExecutablePath_x64 WindowsSDK_ExecutablePath_x86; do
     if [[ "${!v}" ]]; then

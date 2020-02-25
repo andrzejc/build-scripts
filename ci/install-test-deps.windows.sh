@@ -19,4 +19,3 @@ Win32)
 esac
 
 source bin/vcvarsall ${VARS}
-env

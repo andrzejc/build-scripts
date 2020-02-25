@@ -30,6 +30,5 @@ fi
 # :
 # Please make sure either Visual Studio or C++ Build SKU is installed.
 
-$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/_vcvarsall-internal.cmd "$@"
-
+## Run vcvarsall.bat and export the updated env vars to this shell
 eval $( $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/_vcvarsall-internal.cmd "$@" )
