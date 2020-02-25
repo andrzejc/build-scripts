@@ -41,7 +41,7 @@ for v in ExtensionSdkDir Framework40Version FrameworkDir FrameworkDIR64 Framewor
     fi
 done
 
+env
+
 export CC=cl
 export CXX="${CC}"
-
-cmd /c "env"
