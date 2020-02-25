@@ -39,7 +39,7 @@ matrix:
     arch: arm64
   - os: windows
     name: Win32
-    env: TARGET_PLATFORM=amd64_x86
+    env: TARGET_PLATFORM=x86
   - os: windows
     name: Win64
     env: TARGET_PLATFORM=amd64
