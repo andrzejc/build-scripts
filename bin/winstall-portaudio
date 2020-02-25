@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+## Wrapper for repackaging portaudio binary & source release into sth usable with MSVC.
+## If no params provided, use stable 1.9.6 release (which wasn't updated for ~4 years
+## as of writing this).
+## winstall-portaudio [<target-platform>] [<binary-url> <binary-hash> <source-url> <source-hash>]
+set -eu
+set -o pipefail
+
+set -x
+
+function _program_files_dir {
+    local system_drive="${SystemDrive:-c:}"
+    system_drive="${system_drive%:}"
+    case "$1" in
+    *64)
+        echo "/${system_drive}/Program Files" ;;
+    *32|*86)
+        # TODO: this assumes we're always on 64-bit machine
+        echo "/${system_drive}/Program Files (x86)" ;;
+    *)
+        >&2 echo "winstall-portaudio: unknown target platform $1"
+        return 1 ;;
+    esac
+}
+
+function winstall_portaudio {
+    local target_platform="${1:-x64}"
+    local binary_url="${2:-https://github.com/spatialaudio/portaudio-binaries/archive/portaudio-19.6.0.tar.gz}"
+    local binary_hash="${3:-3d2a34cfbfb14f39bd8ba71232d54f2662740cad}"
+    local source_url="${4:-http://www.portaudio.com/archives/pa_stable_v190600_20161030.tgz}"
+    local source_hash="${5:-56c596bba820d90df7d057d8f6a0ec6bf9ab82e8}"
+
+    local temp_dir=
+    temp_dir=$( mktemp -d )
+    trap "> /dev/null 2>&1 rm -rf '${temp_dir}' || true" EXIT
+
+    local this_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+    local binary_archive=
+    binary_archive=$( "${this_dir}/safe-download" "${binary_url}" "${temp_dir}" "${binary_hash}" )
+    local binary_dir=
+    binary_dir=$( tar -tf "${binary_archive}" | head -n1 )
+    tar -xf "${binary_archive}" -C "${temp_dir}"
+
+    local install_dir=
+    install_dir=$( _program_files_dir "${target_platform}" )
+    install_dir+="/PortAudio"
+    mkdir -p "${install_dir}/bin" "${install_dir}/lib" "${install_dir}/include"
+
+    if [[ "${target_platform}" =~ 64$ ]]; then
+        cp "${temp_dir}/${binary_dir}/libportaudio64bit.dll" "${install_dir}/lib/portaudio.dll"
+    else
+        cp "${temp_dir}/${binary_dir}/libportaudio32bit.dll" "${install_dir}/lib/portaudio.dll"
+    fi
+
+    "${this_dir}/dll2lib" "${install_dir}/lib/portaudio.dll" "${target_platform}"
+    mv "${install_dir}/lib/portaudio.dll" "${install_dir}/bin"
+
+    local source_archive=
+    source_archive=$( "${this_dir}/safe-download" "${source_url}" "${temp_dir}" "${source_hash}" )
+    local source_dir=
+    source_dir=$( tar -tf "${source_archive}" | head -n1 )
+    tar -xf "${source_archive}" -C "${temp_dir}"
+
+    cp "${temp_dir}/${source_dir}"/*.h "${install_dir}/include"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    winstall_portaudio "$@"
+fi
