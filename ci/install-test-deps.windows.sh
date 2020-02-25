@@ -5,7 +5,6 @@ set -o pipefail
 # Required for safe-download script
 choco install openssl.light
 choco install ninja
-choco install make
 
 bin/winstall-portaudio "${TARGET_PLATFORM}"
 
