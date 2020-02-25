@@ -1,3 +1,4 @@
+project(TestSafeDownload LANGUAGES NONE)
 find_package(SafeDownload REQUIRED)
 
 set(TEST_DOWNLOAD_URL https://raw.githubusercontent.com/andrzejc/build-scripts/develop/test/TestSafeDownload/data)
