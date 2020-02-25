@@ -1,27 +1,15 @@
 include(FindPackageHandleStandardArgs)
+include("${CMAKE_CURRENT_LIST_DIR}/GetWindowsProgramFilesDir.cmake")
 
 # Create function scope to avoid polluting global namespace
 function(_find_libsndfile)
     set(Sndfile_CANDIDATES sndfile libsndfile)
-    if(MSVC AND NOT DEFINED Sndfile_ROOT AND NOT DEFINED ENV{Sndfile_ROOT})
-        # Check default installation of http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe & w32 version.
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(program_files "Program Files")
-        else()
-            if(ENV{PROCESSOR_ARCHITECTURE} MATCHES 64 OR ENV{PROCESSOR_ARCHITEW6432} MATCHES 64)
-                # 32bit target on 64bit Windows
-                set(program_files "Program Files (x86)")
-            else()
-                # 32bit target on 32bit Windows
-                set(program_files "Program Files")
-            endif()
+    if(MSVC)
+        if(NOT DEFINED Sndfile_ROOT AND NOT DEFINED ENV{Sndfile_ROOT})
+            # Check default installation of http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe & w32 version.
+            get_windows_program_files_dir(program_files)
+            list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/Mega-Nerd/libsndfile")
         endif()
-        if(DEFINED ENV{SystemDrive})
-            set(program_files "$ENV{SystemDrive}/${program_files}")
-        else()
-            set(program_files "C:/${program_files}")
-        endif()
-        list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/Mega-Nerd/libsndfile")
         list(INSERT Sndfile_CANDIDATES 0 libsndfile-1)
     endif()
 
