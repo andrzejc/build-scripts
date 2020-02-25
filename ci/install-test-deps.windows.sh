@@ -2,6 +2,9 @@
 set -e
 set -o pipefail
 
+unset CC
+unset CXX
+
 # Required for safe-download script
 choco install openssl.light
 choco install ninja
