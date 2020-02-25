@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+## Note: this file sets up environment variables, so it should be sourced
+## Shebang line is for the editors to highlight syntax only
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    >&@ echo "vcvarsall: this script should be sourced, not executed"
+fi
+
+$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/_vcvarsall-internal.cmd "$@"

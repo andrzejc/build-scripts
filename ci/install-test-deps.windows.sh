@@ -14,3 +14,6 @@ Win32)
     >&2 echo "Installation of libsndfile for this target is not supported"
     return 1 ;;
 esac
+
+
+MSYS_NO_PATHCONV=1 source bin/vcvarsall /help
