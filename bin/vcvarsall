@@ -32,16 +32,3 @@ fi
 
 ## Run vcvarsall.bat and export the updated env vars to this shell
 eval $( $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/_vcvarsall-internal.cmd "$@" )
-
-for v in ExtensionSdkDir Framework40Version FrameworkDir FrameworkDIR64 FrameworkVersion FrameworkVersion64 INCLUDE LIB LIBPATH NETFXSDKDir PATH Platform UCRTVersion UniversalCRTSdkDir VCINSTALLDIR VisualStudioVersion VSINSTALLDIR WindowsLibPath WindowsSdkDir WindowsSDKLibVersion WindowsSDKVersion WindowsSDK_ExecutablePath_x64 WindowsSDK_ExecutablePath_x86; do
-    if [[ "${!v}" ]]; then
-        echo "${v}=${!v}"
-        declare -p "${v}"
-        export ${v}
-    fi
-done
-
-env
-
-export CC=cl
-export CXX="${CC}"

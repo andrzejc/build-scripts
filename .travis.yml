@@ -8,7 +8,7 @@ install:
 
 script:
 - mkdir build && cd build
-- cmake -GNinja ..
+- cmake ${TARGET_PLATFORM:+-A ${TARGET_PLATFORM}} ..
 - cmake --build . --config RelWithDebInfo
 - ctest --output-on-failure -C RelWithDebInfo
 
@@ -39,7 +39,7 @@ matrix:
     arch: arm64
   - os: windows
     name: Win32
-    env: TARGET_PLATFORM=x86
+    env: TARGET_PLATFORM=Win32
   - os: windows
     name: Win64
-    env: TARGET_PLATFORM=amd64
+    env: TARGET_PLATFORM=x64
