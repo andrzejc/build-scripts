@@ -1,3 +1,7 @@
+message(STATUS "PATH: $ENV{PATH}")
+message(STATUS "LIB: $ENV{LIB}")
+message(STATUS "LIBPATH: $ENV{LIBPATH}")
+message(STATUS "INCLUDE: $ENV{INCLUDE}")
 cmake_minimum_required(VERSION 3.1)
 project(BuildScriptsTests LANGUAGES NONE)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
