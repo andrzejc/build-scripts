@@ -31,16 +31,17 @@ fi
 # Please make sure either Visual Studio or C++ Build SKU is installed.
 
 ## Run vcvarsall.bat and export the updated env vars to this shell
-CMD=$( $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/_vcvarsall-internal.cmd "$@" )
-echo ${CMD}
-# eval $( $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/_vcvarsall-internal.cmd "$@" )
-eval ${CMD}
+eval $( $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/_vcvarsall-internal.cmd "$@" )
 
 for v in ExtensionSdkDir Framework40Version FrameworkDir FrameworkDIR64 FrameworkVersion FrameworkVersion64 INCLUDE LIB LIBPATH NETFXSDKDir PATH Platform UCRTVersion UniversalCRTSdkDir VCINSTALLDIR VisualStudioVersion VSINSTALLDIR WindowsLibPath WindowsSdkDir WindowsSDKLibVersion WindowsSDKVersion WindowsSDK_ExecutablePath_x64 WindowsSDK_ExecutablePath_x86; do
-    echo "${v}=${!v}"
-    declare -p "${v}"
+    if [[ "${!v}" ]]; then
+        echo "${v}=${!v}"
+        declare -p "${v}"
+        export ${v}
+    fi
 done
 
 export CC=cl
 export CXX="${CC}"
 
+cmd /c "env"
