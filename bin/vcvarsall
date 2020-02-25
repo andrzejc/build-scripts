@@ -33,5 +33,7 @@ fi
 ## Run vcvarsall.bat and export the updated env vars to this shell
 eval $( $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/_vcvarsall-internal.cmd "$@" )
 
-export CC=cl
-export CXX=cl
+export CC=cl.exe
+export CXX=cl.exe
+
+which ${CC}
