@@ -16,4 +16,4 @@ Win32)
 esac
 
 
-MSYS_NO_PATHCONV=1 source bin/vcvarsall /help
+MSYS_NO_PATHCONV=1 source bin/vcvarsall amd64
