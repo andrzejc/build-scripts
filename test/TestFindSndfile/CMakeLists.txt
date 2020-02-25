@@ -3,8 +3,12 @@ find_package(Sndfile REQUIRED)
 add_executable(sndfile-version main.c)
 target_link_libraries(sndfile-version PRIVATE Sndfile::libsndfile)
 
-add_test(NAME sndfile-version
+set(wd_arg)
+if(WIN32)
+    set(wd_arg WORKING_DIRECTORY "${Sndfile_ROOT}/bin")
+endif()
+
+add_test(NAME sndfile-found-and-linked
     COMMAND sndfile-version
-    # Make sure we find the dll on Windows
-    WORKING_DIRECTORY "${Sndfile_ROOT}/bin"
+    ${wd_arg}
 )
