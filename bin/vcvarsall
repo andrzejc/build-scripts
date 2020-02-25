@@ -35,3 +35,4 @@ eval $( $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/_vcvarsall-internal.cm
 
 export CC=$( which cl )
 export CXX="${CC}"
+export RC=$( which rc )
