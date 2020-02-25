@@ -6,3 +6,4 @@ for v in ExtensionSdkDir Framework40Version FrameworkDir FrameworkDIR64 Framewor
         commands+=$( declare -p "${v}" )
     fi
 done
+echo "${commands}"
