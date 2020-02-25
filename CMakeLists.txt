@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
 project(BuildScriptsTests
     VERSION 0.1
-    DESCRIPTION "Test driver project for https://github.com/andrzejc/build-scripts"
-    HOMEPAGE_URL https://github.com/andrzejc/build-scripts
+    # DESCRIPTION "Test driver project for https://github.com/andrzejc/build-scripts"
+    # HOMEPAGE_URL https://github.com/andrzejc/build-scripts
     LANGUAGES NONE
 )
 
