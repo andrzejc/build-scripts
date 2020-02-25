@@ -6,8 +6,6 @@
 set -eu
 set -o pipefail
 
-set -x
-
 function _program_files_dir {
     local system_drive="${SystemDrive:-c:}"
     system_drive="${system_drive%:}"
