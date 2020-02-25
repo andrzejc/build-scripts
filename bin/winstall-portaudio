@@ -39,7 +39,7 @@ function winstall_portaudio {
     local binary_archive=
     binary_archive=$( "${this_dir}/safe-download" "${binary_url}" "${temp_dir}" "${binary_hash}" )
     local binary_dir=
-    binary_dir=$( tar -tf "${binary_archive}" | head -n1 )
+    binary_dir=$( set +o pipefail; tar -tf "${binary_archive}" | head -n1 )
     tar -xf "${binary_archive}" -C "${temp_dir}"
 
     local install_dir=
@@ -59,7 +59,7 @@ function winstall_portaudio {
     local source_archive=
     source_archive=$( "${this_dir}/safe-download" "${source_url}" "${temp_dir}" "${source_hash}" )
     local source_dir=
-    source_dir=$( tar -tf "${source_archive}" | head -n1 )
+    source_dir=$( set +o pipefail; tar -tf "${source_archive}" | head -n1 )
     tar -xf "${source_archive}" -C "${temp_dir}"
 
     cp "${temp_dir}/${source_dir}"/*.h "${install_dir}/include"
