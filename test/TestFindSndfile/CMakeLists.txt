@@ -9,3 +9,14 @@ if(WIN32)
         ENVIRONMENT "PATH=$<SHELL_PATH:$<TARGET_PROPERTY:Sndfile::libsndfile,DLL_DIRECTORY>>"
     )
 endif()
+
+if(WIN32)
+    add_test(NAME test-path-expansion-1 COMMAND cmd /c "echo %PATH%")
+    set_tests_properties(test-path-expansion PROPERTIES
+        ENVIRONMENT "PATH=$<SHELL_PATH:$ENV{PATH}$>$<SEMICOLON>$<SHELL_PATH:$<TARGET_PROPERTY:Sndfile::libsndfile,DLL_DIRECTORY>>"
+    )
+    add_test(NAME test-path-expansion-2 COMMAND cmd /c "echo %PATH%")
+    set_tests_properties(test-path-expansion PROPERTIES
+        ENVIRONMENT "PATH=$<SHELL_PATH:$ENV{PATH}$>$<SEMICOLON>$<SHELL_PATH:$<TARGET_PROPERTY:Sndfile::libsndfile,DLL_DIRECTORY>>"
+    )
+endif()
