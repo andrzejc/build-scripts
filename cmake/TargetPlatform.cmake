@@ -65,8 +65,8 @@ int main() {return 0;}
 " TARGET_PLATFORM_SPARC)
 
 if (TARGET_PLATFORM_X86)
-	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-	# using Visual Studio C++ or Intel
+	if (MSVC)
+		# using Visual Studio C++ or Intel
 		if (NOT TARGET_PLATFORM_X64)
 			set(CXX_COMPILER_SSE_FLAG "/arch:SSE")
 			set(CXX_COMPILER_SSE2_FLAG "/arch:SSE2")

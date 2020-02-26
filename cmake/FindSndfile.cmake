@@ -1,11 +1,11 @@
 include(FindPackageHandleStandardArgs)
-include("${CMAKE_CURRENT_LIST_DIR}/GetWindowsProgramFilesDir.cmake")
 
 # Create function scope to avoid polluting global namespace
 function(_find_libsndfile)
     set(Sndfile_CANDIDATES sndfile libsndfile)
     if(MSVC)
         if(NOT DEFINED Sndfile_ROOT AND NOT DEFINED ENV{Sndfile_ROOT})
+            include("${CMAKE_CURRENT_LIST_DIR}/GetWindowsProgramFilesDir.cmake")
             # Check default installation of http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe & w32 version.
             get_windows_program_files_dir(program_files)
             list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/Mega-Nerd/libsndfile")
@@ -46,6 +46,10 @@ function(_find_libsndfile)
                 INTERFACE_INCLUDE_DIRECTORIES "${Sndfile_INCLUDE_DIR}"
                 IMPORTED_LOCATION "${Sndfile_LIBRARY}"
             )
+            if(WIN32)
+                include("${CMAKE_CURRENT_LIST_DIR}/GetSidecarDllDirectory.cmake")
+                setup_library_dll_directory(Sndfile::libsndfile)
+            endif()
         endif()
         if(DEFINED Sndfile_VERSION)
             set(Sndfile_VERSION "${Sndfile_VERSION}" PARENT_SCOPE)

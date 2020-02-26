@@ -5,7 +5,7 @@ target_link_libraries(portaudio-version PRIVATE PortAudio::libportaudio)
 
 set(wd_arg)
 if(WIN32)
-    set(wd_arg WORKING_DIRECTORY "${PortAudio_ROOT}/bin")
+    set(wd_arg WORKING_DIRECTORY $<TARGET_PROPERTY:PortAudio::libportaudio,DLL_DIRECTORY>)
 endif()
 
 add_test(NAME portaudio-found-and-linked

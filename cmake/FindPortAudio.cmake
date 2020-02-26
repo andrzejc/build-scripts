@@ -1,11 +1,11 @@
 include(FindPackageHandleStandardArgs)
-include("${CMAKE_CURRENT_LIST_DIR}/GetWindowsProgramFilesDir.cmake")
 
 # Create function scope to avoid polluting global namespace
 function(_find_portaudio)
     set(PortAudio_CANDIDATES portaudio libportaudio)
     if(MSVC)
         if(NOT DEFINED PortAudio_ROOT AND NOT DEFINED ENV{PortAudio_ROOT})
+            include("${CMAKE_CURRENT_LIST_DIR}/GetWindowsProgramFilesDir.cmake")
             get_windows_program_files_dir(program_files)
             # This will cause ./lib and ./include to be searched
             list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/PortAudio")
@@ -54,6 +54,10 @@ function(_find_portaudio)
                 INTERFACE_INCLUDE_DIRECTORIES "${PortAudio_INCLUDE_DIR}"
                 IMPORTED_LOCATION "${PortAudio_LIBRARY}"
             )
+            if(WIN32)
+                include("${CMAKE_CURRENT_LIST_DIR}/GetSidecarDllDirectory.cmake")
+                setup_library_dll_directory(PortAudio::libportaudio)
+            endif()
         endif()
         if(DEFINED PortAudio_VERSION)
             set(PortAudio_VERSION "${PortAudio_VERSION}" PARENT_SCOPE)
