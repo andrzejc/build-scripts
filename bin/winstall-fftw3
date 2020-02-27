@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+## Wrapper for downloading and extractig import library from FFTW3 binary release
+## If no params provided, use stable 3.3.5
+## winstall-portaudio [<target-platform>] [<binary-url> <binary-hash>]
+set -eu
+set -o pipefail
+
+function winstall_fftw3 {
+    local target_platform="${1:-x64}"
+    local binary_url="${2:-ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip}"
+    local binary_hash="${3:-409f4a5272506eb7422d265a68a02deeefcb5c17}"
+
+    local temp_dir=
+    temp_dir=$( mktemp -d )
+    trap "> /dev/null 2>&1 rm -rf '${temp_dir}' || true" EXIT
+
+    local this_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+    local binary_archive=
+    binary_archive=$( "${this_dir}/safe-download" "${binary_url}" "${temp_dir}" "${binary_hash}" )
+    local binary_dir=
+    binary_dir=$( set +o pipefail; tar -tf "${binary_archive}" | head -n1 )
+
+    local install_dir=
+    install_dir=$( "${this_dir}/get-windows-program-files-dir" "${target_platform}" )
+    mkdir -p "${install_dir}"
+    tar -xf "${binary_archive}" -C "${install_dir}"
+
+    for f in "${install_dir}/${binary_dir}"/*.dll; do
+        "${this_dir}/dll2lib" "${f}" "${target_platform}"
+    done
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    winstall_fftw3 "$@"
+fi

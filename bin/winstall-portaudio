@@ -6,21 +6,6 @@
 set -eu
 set -o pipefail
 
-function _program_files_dir {
-    local system_drive="${SystemDrive:-c:}"
-    system_drive="${system_drive%:}"
-    case "$1" in
-    *64)
-        echo "/${system_drive}/Program Files" ;;
-    *32|*86)
-        # TODO: this assumes we're always on 64-bit machine
-        echo "/${system_drive}/Program Files (x86)" ;;
-    *)
-        >&2 echo "winstall-portaudio: unknown target platform $1"
-        return 1 ;;
-    esac
-}
-
 function winstall_portaudio {
     local target_platform="${1:-x64}"
     local binary_url="${2:-https://github.com/spatialaudio/portaudio-binaries/archive/portaudio-19.6.0.tar.gz}"
@@ -41,7 +26,7 @@ function winstall_portaudio {
     tar -xf "${binary_archive}" -C "${temp_dir}"
 
     local install_dir=
-    install_dir=$( _program_files_dir "${target_platform}" )
+    install_dir=$( "${this_dir}/get-windows-program-files-dir" "${target_platform}" )
     install_dir+="/PortAudio"
     mkdir -p "${install_dir}/bin" "${install_dir}/lib" "${install_dir}/include"
 

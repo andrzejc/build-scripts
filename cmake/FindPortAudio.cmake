@@ -27,9 +27,9 @@ function(_find_portaudio)
         DOC "Directory of portaudio headers"
     )
     find_library(PortAudio_LIBRARY
-        NAMES ${PC_PortAudio_LIBRARIES} ${PortAudio_CANDIDATES}
+        NAMES ${PortAudio_CANDIDATES}
         HINTS "${PC_PortAudio_LIBDIR}"
-        DOC "Directory of portaudio library file"
+        DOC "Path of portaudio library file"
     )
     mark_as_advanced(PortAudio_INCLUDE_DIR PortAudio_LIBRARY)
     set(PortAudio_VERSION_ARG)

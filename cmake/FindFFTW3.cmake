@@ -1,185 +1,166 @@
-# - Try to find FFTW3 libraries
-# Once done this will define
-#  FFTW3_FOUND - System has libsndfile
-#  FFTW3_INCLUDE_DIRS - The libsndfile include directories
-#  FFTW3_LIBRARIES - The libraries needed to use libsndfile
-#  FFTW3_DEFINITIONS - Compiler switches required for using libsndfile
-
-if (MSVC)
-	if(NOT DEFINED FFTW3_DIR)
-		if(DEFINED FFTW3_ROOT)
-			set(FFTW3_DIR ${FFTW3_ROOT})
-		elseif(DEFINED ENV{FFTW3_ROOT})
-			set(FFTW3_DIR $ENV{FFTW3_ROOT})
-		else()
-			set(FFTW3_DIR "FFTW3_DIR-NOTFOUND")
-		endif()
-	endif()
-	set(FFTW3_DIR "${FFTW3_DIR}" CACHE PATH "Installation folder of FFTW3")
-
-	# Parse import library name to get FFTW3 minor version number
-	foreach(_subdir x64 x86 x64/lib x86/lib lib/x64 lib/x86 lib32 lib64 lib "")
-		file(GLOB _matches
-			"${FFTW3_DIR}/${_subdir}/*${CMAKE_IMPORT_LIBRARY_SUFFIX}")
-		foreach(_match ${_matches})
-			get_filename_component(_name ${_match} NAME_WE)
-			if(${_name} MATCHES "^(lib)?fftw3[flq]?-([0-9]+)")
-				set(FFTW3_VERSION_MINOR ${CMAKE_MATCH_2})
-				break()
-			endif()
-		endforeach()
-		if(NOT "${FFTW3_VERSION_MINOR}" STREQUAL "")
-			break()
-		endif()
-	endforeach()
-
-	if (CMAKE_CL_64)
-		set(_subdirs ${FFTW3_DIR}/x64 ${FFTW3_DIR}/x64/lib
-			${FFTW3_DIR}/lib/x64 ${FFTW3_DIR}/lib64 ${FFTW3_DIR}/lib
-			${FFTW3_DIR})
-	else ()
-		set(_subdirs ${FFTW3_DIR}/x86 ${FFTW3_DIR}/x86/lib
-			${FFTW3_DIR}/lib/x86 ${FFTW3_DIR}/lib32 ${FFTW3_DIR}/lib
-			${FFTW3_DIR})
-	endif()
-
-	macro(_fftw3_lib _SUFFIXV _SUFFIXF)
-		find_library("FFTW3${_SUFFIXV}_LIBRARY"
-				NAMES
-					"libfftw3${_SUFFIXF}-${FFTW3_VERSION_MINOR}"
-					"fftw3${_SUFFIXF}-${FFTW3_VERSION_MINOR}"
-				PATHS ${_subdirs})
-		# message(STATUS "FFTW3${_SUFFIXV}_LIBRARY: ${FFTW3${_SUFFIXV}_LIBRARY}")
-		if (FFTW3${_SUFFIXV}_LIBRARY)
-			list(APPEND FFTW3_LIBRARIES "${FFTW3${_SUFFIXV}_LIBRARY}")
-			# message(STATUS "FFTW3_LIBRARIES: ${FFTW3_LIBRARIES}")
-		endif()
-	endmacro()
-
-	_fftw3_lib(D "")
-	_fftw3_lib(F f)
-	_fftw3_lib(L l)
-	_fftw3_lib(Q q)
-
-	find_path(FFTW3_INCLUDE_DIR fftw3.h
-		PATHS ${_subdirs}
-		PATH_SUFFIXES include)
-
-	set(FFTW3_VERSION "3.${FFTW3_VERSION_MINOR}")
-else ()
-	set(FFT3_DEFINITIONS "")
-	find_package(PkgConfig)
-
-	macro(_fftw3_lib _SUFFIXV _SUFFIXF)
-		set(_stem "FFTW3${_SUFFIXV}")
-		set(_threads_library "${_stem}_THREADS_LIBRARY")
-		set(_library "${_stem}_LIBRARY")
-		set(_fstem "fftw3${_SUFFIXF}")
-
-		if(PkgConfig_FOUND)
-			pkg_check_modules("PC_${_stem}" QUIET ${_fstem})
-		endif()
-
-		find_library(${_library}
-			NAMES
-				"${_fstem}"
-				"lib${_fstem}"
-			HINTS "${PC_${_stem}_LIBRARY_DIRS}")
-
-		if("${_library}")
-#            message(STATUS "found: ${${_library}}")
-			list(APPEND FFTW3_LIBRARIES "${${_library}}")
-
-			find_library(${_threads_library}
-				NAMES
-					"${_fstem}_threads"
-					"lib${_fstem}_threads"
-				HINTS "${PC_${_stem}_LIBRARY_DIRS}")
-
-			if("${_threads_library}")
-#                message(STATUS "found: ${${_threads_library}}")
-				list(APPEND FFTW3_LIBRARIES "${${_threads_library}}")
-			endif()
-
-			set("${_stem}_DEFINITIONS"
-					"${PC_${_stem}_CFLAGS_OTHER}")
-			list(APPEND FFTW3_DEFINITIONS "${${_stem}_DEFINITIONS}")
-		endif()
-	endmacro()
-
-	#    if(FFTW3_FIND_COMPONENTS)
-	#        foreach(_comp ${FFTW3_FIND_COMPONENTS})
-	#            if(_comp STREQUAL "fftw3")
-	#                _fftw3_lib(D "")
-
-	_fftw3_lib(D "")
-	_fftw3_lib(F f)
-	_fftw3_lib(L l)
-	_fftw3_lib(Q q)
-
-	find_path(FFTW3_INCLUDE_DIR fftw3.h
-		HINTS
-			${PC_FFTW3F_INCLUDE_DIRS}
-			${PC_FFTW3D_INCLUDE_DIRS}
-			${PC_FFTW3L_INCLUDE_DIRS}
-			${PC_FFTW3Q_INCLUDE_DIRS})
-
-	list(REMOVE_DUPLICATES FFTW3_DEFINITIONS)
-	set(FFTW3_VERSION ${PC_FFTW3D_VERSION})
-endif()
-
-if(NOT FFTW3_LIBRARIES)
-    set(FFTW3_LIBRARIES "FFTW3_LIBRARIES-NOTFOUND")
-endif()
-
-set(FFTW3_INCLUDE_DIRS ${FFTW3_INCLUDE_DIR})
-
 include(FindPackageHandleStandardArgs)
-# handle the QUIETLY and REQUIRED arguments and set FFTW3_FOUND to TRUE
-# if all listed variables are TRUE
+include("${CMAKE_CURRENT_LIST_DIR}/GetWindowsProgramFilesDir.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/GetSidecarDllDirectory.cmake")
+
+if(NOT DEFINED FFTW3_USE_THREAD_LIBS)
+    set(FFTW3_USE_THREAD_LIBS ON)
+endif()
+
+function(_find_fftw3_include_dir)
+    set(paths_and_hints)
+    if(MSVC)
+        if(NOT DEFINED FFTW3_ROOT AND NOT DEFINED ENV{FFTW3_ROOT})
+            get_windows_program_files_dir(program_files)
+            # This will cause ./include to be searched
+            list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/FFTW3")
+            # This will search ./ dir too
+            set(paths_and_hints PATHS "${program_files}/FFTW3")
+        elseif(DEFINED FFTW3_ROOT)
+            set(paths_and_hints HINTS "${FFTW3_ROOT}")
+        else()
+            file(TO_CMAKE_PATH "$ENV{FFTW3_ROOT}" root)
+            set(paths_and_hints HINTS "${root}")
+        endif()
+        if(CMAKE_SYSTEM_PROCESSOR MATCHES "amd64|x86_64|AMD64")
+            list(APPEND paths_and_hints PATH_SUFFIXES x64 Win64 x64/include Win64/include)
+        elseif(CMAKE_SYSTEM_PROCESSOR MATCHES ".*86")
+            list(APPEND paths_and_hints PATH_SUFFIXES x86 Win32 x86/include Win32/include)
+        endif()
+    endif()
+
+    find_package(PkgConfig QUIET)
+    pkg_check_modules(PC_FFTW3 QUIET fftw3)
+
+    find_path(FFTW3_INCLUDE_DIR
+        NAMES fftw3.h
+        HINTS "${PC_FFTW3_INCLUDEDIR}"
+        ${paths_and_hints}
+        DOC "Directory of fftw3 headers"
+    )
+    mark_as_advanced(FFTW3_INCLUDE_DIR)
+endfunction()
+
+_find_fftw3_include_dir()
+
+function(_find_fftw3_library variant)
+    set(paths_and_hints)
+    set(candidates "fftw3${variant}" "libfftw3${variant}")
+    if(MSVC)
+        # Prebuilt binaries from fftw.org have minor version number embedded
+        # in library name, try searching for them relative to FFTW3_INCLUDE_DIR or FFTW3_ROOT vars,
+        # so that we can setup library name for find_library properly
+        if(NOT FFTW3_INCLUDE_DIR)
+            return()
+        endif()
+        set(root "${FFTW3_INCLUDE_DIR}")
+        get_filename_component(last_component "${root}" NAME)
+        string(TOLOWER "${last_component}" last_component)
+        if(last_component MATCHES "include")
+            get_filename_component(root "${root}" DIRECTORY)
+        endif()
+        set(paths_and_hints PATHS "${root}")
+
+        file(GLOB_RECURSE matches RELATIVE "${root}" "${root}/*fftw3${variant}*${CMAKE_IMPORT_LIBRARY_SUFFIX}")
+        foreach(match IN LISTS matches)
+            get_filename_component(match "${match}" NAME)
+            if(match MATCHES "^(lib)?fftw3${variant}-([0-9]+)")
+                list(INSERT candidates 0
+                    "fftw3${variant}-${CMAKE_MATCH_2}"
+                    "libfftw3${variant}-${CMAKE_MATCH_2}"
+                )
+                set(FFTW3_VERSION "3.${CMAKE_MATCH_2}" PARENT_SCOPE)
+                break()
+            endif()
+        endforeach(match)
+
+        if(CMAKE_SYSTEM_PROCESSOR MATCHES "amd64|x86_64|AMD64")
+            list(APPEND paths_and_hints PATH_SUFFIXES x64 Win64 x64/lib Win64/lib)
+        elseif(CMAKE_SYSTEM_PROCESSOR MATCHES ".*86")
+            list(APPEND paths_and_hints PATH_SUFFIXES x86 Win32 x86/lib Win32/lib)
+        endif()
+    endif()
+
+    find_package(PkgConfig QUIET)
+    pkg_check_modules("PC_FFTW3${variant}" QUIET "fftw3${variant}")
+
+    find_library("FFTW3_libfftw3${variant}_LIBRARY"
+        NAMES ${candidates}
+        HINTS "${PC_FFTW3${variant}_LIBDIR}"
+        ${paths_and_hints}
+        DOC "Path of fftw3${variant} library file"
+    )
+    mark_as_advanced("FFTW3_libfftw3${variant}_LIBRARY")
+
+    if(FFTW3_USE_THREAD_LIBS)
+        list(TRANSFORM candidates APPEND _threads)
+        find_library("FFTW3_libfftw3${variant}_threads_LIBRARY"
+            NAMES ${candidates}
+            HINTS "${PC_FFTW3${variant}_LIBDIR}"
+            ${paths_and_hints}
+            DOC "Path of fftw3${variant}_threads library file"
+        )
+        mark_as_advanced("FFTW3_libfftw3${variant}_threads_LIBRARY")
+    endif()
+endfunction()
+
+if(NOT FFTW3_FIND_COMPONENTS)
+    set(FFTW3_FIND_COMPONENTS libfftw3)
+    set(FFTW3_FIND_REQUIRED_libfftw3 TRUE)
+endif()
+
+set(FFTW3_LIBRARIES)
+foreach(comp IN LISTS FFTW3_FIND_COMPONENTS)
+    set("FFTW3_${comp}_FOUND" FALSE)
+    if(NOT comp MATCHES "^libfftw3([flq]?)$")
+        message(FATAL_ERROR "FFTW3: Unknown component ${comp}")
+    endif()
+    _find_fftw3_library("${CMAKE_MATCH_1}")
+    if(FFTW3_${comp}_LIBRARY)
+        set("FFTW3_${comp}_FOUND" TRUE)
+        list(APPEND FFTW3_LIBRARIES "${FFTW3_${comp}_LIBRARY}")
+        if(FFTW3_libfftw3${variant}_threads_LIBRARY)
+            list(APPEND FFTW3_LIBRARIES "${FFTW3_libfftw3${variant}_threads_LIBRARY}")
+        endif()
+    endif()
+endforeach(comp)
+
+if(PC_FFTW3_VERSION)
+    set(FFTW3_VERSION "${PC_FFTW3_VERSION}")
+endif()
+set(_FFTW3_VERSION_VARS)
+if(DEFINED FFTW3_VERSION)
+    set(_FFTW3_VERSION_VARS VERSION_VAR FFTW3_VERSION)
+endif()
+
 find_package_handle_standard_args(FFTW3
-	REQUIRED_VARS FFTW3_LIBRARIES FFTW3_INCLUDE_DIRS
-	VERSION_VAR FFTW3_VERSION)
+    REQUIRED_VARS FFTW3_LIBRARIES FFTW3_INCLUDE_DIR
+    ${_FFTW3_VERSION_VARS}
+    HANDLE_COMPONENTS
+)
 
-mark_as_advanced(FFTW3_INCLUDE_DIRS FFTW3_LIBRARIES
-	FFTW3F_LIBRARY FFTW3F_THREADS_LIBRARY
-	FFTW3D_LIBRARY FFTW3D_THREADS_LIBRARY
-	FFTW3L_LIBRARY FFTW3L_THREADS_LIBRARY
-	FFTW3Q_LIBRARY FFTW3Q_THREADS_LIBRARY
-	FFTW3_INCLUDE_DIR)
-
-if(FFTW3_FOUND AND NOT TARGET fftw3)
-	macro(_fftw3_component_target _SUFFIXV _SUFFIXF)
-		set(_stem "FFTW3${_SUFFIXV}")
-		set(_threads_library "${_stem}_THREADS_LIBRARY")
-		set(_library "${_stem}_LIBRARY")
-		set(_fstem "fftw3${_SUFFIXF}")
-#        message(STATUS "_fftw3_component_target ${_SUFFIX}")
-		if("${_library}")
-			add_library(${_fstem} UNKNOWN IMPORTED)
-#            message(STATUS "add_library(${_fstem})")
-			set_target_properties(${_fstem} PROPERTIES
-					IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-					IMPORTED_LOCATION "${${_library}}"
-					INTERFACE_COMPILE_OPTIONS "${${_stem}_DEFINITIONS}"
-					INTERFACE_INCLUDE_DIRECTORIES ${FFTW3_INCLUDE_DIR})
-#            message(STATUS "IMPORTED_LOCATION ${${_library}}")
-#            message(STATUS "INTERFACE_INCLUDE_DIRECTORIES ${FFTW3_INCLUDE_DIR}")
-			if("${_threads_library}")
-				add_library("${_fstem}_threads" UNKNOWN IMPORTED)
-#                message(STATUS "add_library(${_fstem}_threads)")
-				set_target_properties("${_fstem}_threads" PROPERTIES
-						IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-						IMPORTED_LOCATION "${${_threads_library}}")
-#                message(STATUS "IMPORTED_LOCATION ${${_threads_library}}")
-				set_target_properties(${_fstem} PROPERTIES
-						INTERFACE_LINK_LIBRARIES "${_fstem}_threads")
-			endif()
-		endif()
-	endmacro()
-
-	_fftw3_component_target(D "")
-	_fftw3_component_target(F f)
-	_fftw3_component_target(L l)
-	_fftw3_component_target(Q q)
+if(FFTW3_FOUND)
+    set(FFTW3_INCLUDE_DIRS "${FFTW3_INCLUDE_DIR}")
+    foreach(comp IN LISTS FFTW3_FIND_COMPONENTS)
+        if(NOT TARGET "FFTW3::${comp}")
+            add_library("FFTW3::${comp}" UNKNOWN IMPORTED)
+            set_target_properties("FFTW3::${comp}" PROPERTIES
+                IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                INTERFACE_INCLUDE_DIRECTORIES "${FFTW3_INCLUDE_DIR}"
+                IMPORTED_LOCATION "${FFTW3_${comp}_LIBRARY}"
+            )
+            setup_library_dll_directory("FFTW3::${comp}")
+        endif()
+        if(NOT TARGET "FFTW3::${comp}_threads" AND FFTW3_libfftw3${comp}_threads_LIBRARY)
+            add_library("FFTW3::${comp}_threads" UNKNOWN IMPORTED)
+            set_target_properties("FFTW3::${comp}_threads" PROPERTIES
+                IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                INTERFACE_INCLUDE_DIRECTORIES "${FFTW3_INCLUDE_DIR}"
+                IMPORTED_LOCATION "${FFTW3_libfftw3${comp}_threads_LIBRARY}"
+            )
+            setup_library_dll_directory("FFTW3::${comp}_threads")
+            set_property(TARGET "FFTW3::${comp}" APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES "FFTW3::${comp}_threads"
+            )
+        endif()
+    endforeach()
 endif()

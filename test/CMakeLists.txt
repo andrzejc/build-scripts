@@ -1,3 +1,4 @@
 add_subdirectory(TestSafeDownload)
 add_subdirectory(TestFindSndfile)
 add_subdirectory(TestFindPortAudio)
+add_subdirectory(TestFindFFTW3)
