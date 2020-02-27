@@ -92,9 +92,12 @@ function(_find_fftw3_library variant)
     mark_as_advanced("FFTW3_libfftw3${variant}_LIBRARY")
 
     if(FFTW3_USE_THREAD_LIBS)
-        list(TRANSFORM candidates APPEND _threads)
+        set(thread_cands)
+        foreach(cand IN LISTS candidates)
+            list(APPEND thread_cands "${cand_threads}")
+        endif()
         find_library("FFTW3_libfftw3${variant}_threads_LIBRARY"
-            NAMES ${candidates}
+            NAMES ${thread_cands}
             HINTS "${PC_FFTW3${variant}_LIBDIR}"
             ${paths_and_hints}
             DOC "Path of fftw3${variant}_threads library file"
