@@ -95,7 +95,7 @@ function(_find_fftw3_library variant)
         set(thread_cands)
         foreach(cand IN LISTS candidates)
             list(APPEND thread_cands "${cand_threads}")
-        endif()
+        endforeach()
         find_library("FFTW3_libfftw3${variant}_threads_LIBRARY"
             NAMES ${thread_cands}
             HINTS "${PC_FFTW3${variant}_LIBDIR}"
