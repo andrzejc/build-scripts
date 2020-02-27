@@ -18,15 +18,13 @@ function winstall_fftw3 {
 
     local binary_archive=
     binary_archive=$( "${this_dir}/safe-download" "${binary_url}" "${temp_dir}" "${binary_hash}" )
-    local binary_dir=
-    binary_dir=$( set +o pipefail; tar -tf "${binary_archive}" | head -n1 )
 
     local install_dir=
     install_dir=$( "${this_dir}/get-windows-program-files-dir" "${target_platform}" )
-    mkdir -p "${install_dir}"
-    tar -xf "${binary_archive}" -C "${install_dir}"
+    mkdir -p "${install_dir}/FFTW3"
+    unzip "${binary_archive}" -d "${install_dir}/FFTW3"
 
-    for f in "${install_dir}/${binary_dir}"/*.dll; do
+    for f in "${install_dir}/FFTW3"/*.dll; do
         "${this_dir}/dll2lib" "${f}" "${target_platform}"
     done
 }
