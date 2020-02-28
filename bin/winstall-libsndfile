@@ -7,7 +7,7 @@ set -o pipefail
 function winstall_libsndfile {
     local target_platform="${1:-x64}"
     local url="${2:-http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28-w64-setup.exe}"
-    local hash="${:-3783e513d735d1526f19a32a63991026}"
+    local hash="${3:-3783e513d735d1526f19a32a63991026}"
     local this_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
     local temp_dir=
     temp_dir=$( mktemp -d )
