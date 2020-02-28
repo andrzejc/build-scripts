@@ -94,7 +94,7 @@ function(_find_fftw3_library variant)
     if(FFTW3_USE_THREAD_LIBS)
         set(thread_cands)
         foreach(cand IN LISTS candidates)
-            list(APPEND thread_cands "${cand_threads}")
+            list(APPEND thread_cands "${cand}_threads")
         endforeach()
         find_library("FFTW3_libfftw3${variant}_threads_LIBRARY"
             NAMES ${thread_cands}
