@@ -31,7 +31,7 @@ function winstall_libsndfile {
             || ! -f "${install_dir}/lib/libsndfile-1.lib" ]]; do
         sleep 1
     done
-    > /dev/null 2>&1 kill "${pid}"
+    kill "${pid}"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
