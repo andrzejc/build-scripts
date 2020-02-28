@@ -10,7 +10,7 @@ function(get_windows_program_files_dir var)
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(program_files "Program Files")
     else()
-        if(ENV{PROCESSOR_ARCHITECTURE} MATCHES 64 OR ENV{PROCESSOR_ARCHITEW6432} MATCHES 64)
+        if(ENV{PROCESSOR_ARCHITECTURE} MATCHES "64$" OR ENV{PROCESSOR_ARCHITEW6432} MATCHES "64$")
             # 32bit target on 64bit Windows
             set(program_files "Program Files (x86)")
         else()

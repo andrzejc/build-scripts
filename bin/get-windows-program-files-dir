@@ -10,8 +10,12 @@ function get_windows_program_files_dir {
     *64)
         echo "/${system_drive}/Program Files" ;;
     *32|*86)
-        # TODO: this assumes we're always on 64-bit machine
-        echo "/${system_drive}/Program Files (x86)" ;;
+        if [[ "${PROCESSOR_ARCHITECTURE}" =~ 64$ || "${PROCESSOR_ARCHITEW6432}" =~ 64$ ]]; then
+            echo "/${system_drive}/Program Files (x86)"
+        else
+            echo "/${system_drive}/Program Files"
+        fi
+        ;;
     *)
         >&2 echo "get-windows-program-files-dir: unknown target platform $1"
         return 1 ;;
