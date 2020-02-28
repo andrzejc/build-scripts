@@ -29,7 +29,7 @@ function dll2lib {
     local dll_name="${dll_path##*/}"
     local dll_dir="${dll_path%/*}"
     local this_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-    ( cd "${dll_dir}" && "${this_dir}/_dll2lib-internal.cmd" "${machine}" "${dll_name}" )
+    ( cd "${dll_dir}" && >&2 "${this_dir}/_dll2lib-internal.cmd" "${machine}" "${dll_name}" )
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

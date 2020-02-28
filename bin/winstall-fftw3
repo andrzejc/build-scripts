@@ -22,7 +22,7 @@ function winstall_fftw3 {
     local install_dir=
     install_dir=$( "${this_dir}/get-windows-program-files-dir" "${target_platform}" )
     mkdir -p "${install_dir}/FFTW3"
-    unzip "${binary_archive}" -d "${install_dir}/FFTW3"
+    >&2 unzip "${binary_archive}" -d "${install_dir}/FFTW3"
 
     for f in "${install_dir}/FFTW3"/*.dll; do
         "${this_dir}/dll2lib" "${f}" "${target_platform}"
