@@ -2,6 +2,7 @@ include(FindPackageHandleStandardArgs)
 include("${CMAKE_CURRENT_LIST_DIR}/GetWindowsProgramFilesDir.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/GetSidecarDllDirectory.cmake")
 
+# TODO: add support for "OMP" variant
 if(NOT DEFINED FFTW3_USE_THREAD_LIBS)
     set(FFTW3_USE_THREAD_LIBS ON)
 endif()
@@ -153,12 +154,12 @@ if(FFTW3_FOUND)
             )
             setup_library_dll_directory("FFTW3::${comp}")
         endif()
-        if(NOT TARGET "FFTW3::${comp}_threads" AND FFTW3_libfftw3${comp}_threads_LIBRARY)
+        if(NOT TARGET "FFTW3::${comp}_threads" AND FFTW3_${comp}_threads_LIBRARY)
             add_library("FFTW3::${comp}_threads" UNKNOWN IMPORTED)
             set_target_properties("FFTW3::${comp}_threads" PROPERTIES
                 IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                 INTERFACE_INCLUDE_DIRECTORIES "${FFTW3_INCLUDE_DIR}"
-                IMPORTED_LOCATION "${FFTW3_libfftw3${comp}_threads_LIBRARY}"
+                IMPORTED_LOCATION "${FFTW3_${comp}_threads_LIBRARY}"
             )
             setup_library_dll_directory("FFTW3::${comp}_threads")
             set_property(TARGET "FFTW3::${comp}" APPEND PROPERTY
