@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+## winstall-exe <installer-url> <installer-hash> [...]
+set -eu
+set -o pipefail
+
+function winstall_exe {
+    local url="${1}"
+    local hash="${2}"
+    shift 2
+
+    local this_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+    local temp_dir=
+    temp_dir=$( mktemp -d )
+    trap "> /dev/null 2>&1 rm -rf '${temp_dir}' || true" EXIT
+
+    local installer_file=
+    installer_file=$( "${this_dir}/safe-download" "${url}" "${temp_dir}" "${hash}" )
+
+    MSYS_NO_PATHCONV=1 "${installer_file}" "$@"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    winstall_exe "$@"
+fi
