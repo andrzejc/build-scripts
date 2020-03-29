@@ -33,6 +33,7 @@ function(_find_lame)
     endif()
 
     if(LAME_LIBRARY AND LAME_INCLUDE_DIR)
+        project(_FindLAME_get_lame_version C)
         try_run(run_res compile_ok
             "${CMAKE_CURRENT_BINARY_DIR}/FindLAME"
             "${CMAKE_CURRENT_LIST_DIR}/get_lame_version.c"
