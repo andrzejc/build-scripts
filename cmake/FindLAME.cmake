@@ -32,6 +32,25 @@ function(_find_lame)
         set(LAME_VERSION_ARG VERSION_VAR PC_LAME_VERSION)
     endif()
 
+    if(LAME_LIBRARY AND LAME_INCLUDE_DIR)
+        try_run(run_res compile_ok
+            "${CMAKE_CURRENT_BINARY_DIR}/FindLAME"
+            "${CMAKE_CURRENT_LIST_DIR}/get_lame_version.c"
+            CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${LAME_INCLUDE_DIR}"
+            LINK_LIBRARIES "${LAME_LIBRARY}"
+            COMPILE_OUTPUT_VARIABLE compile_out
+            RUN_OUTPUT_VARIABLE version_str
+        )
+        # message(STATUS "run_res: ${run_res}; compile_ok: ${compile_ok}; compile_out: ${compile_out}; version_str: ${version_str}")
+        if(compile_ok AND (run_res EQUAL 0))
+            string(STRIP "${version_str}" version_str)
+            set(LAME_VERSION "${version_str}")
+            set(LAME_VERSION_ARG VERSION_VAR LAME_VERSION)
+        else()
+            message(WARNING "Failed to compile or run simple libmp3lame client")
+        endif()
+    endif()
+
     find_package_handle_standard_args(LAME
         REQUIRED_VARS LAME_LIBRARY LAME_INCLUDE_DIR
         ${LAME_VERSION_ARG}
@@ -41,6 +60,9 @@ function(_find_lame)
         set(LAME_FOUND "${LAME_FOUND}" PARENT_SCOPE)
         set(LAME_INCLUDE_DIRS "${LAME_INCLUDE_DIR}" PARENT_SCOPE)
         set(LAME_LIBRARIES "${LAME_LIBRARY}" PARENT_SCOPE)
+        if(DEFINED LAME_VERSION)
+            set(LAME_VERSION "${LAME_VERSIO}" PARENT_SCOPE)
+        endif()
         if(NOT TARGET LAME::libmp3lame)
             add_library(LAME::libmp3lame UNKNOWN IMPORTED)
             set_target_properties(LAME::libmp3lame PROPERTIES
