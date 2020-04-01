@@ -19,7 +19,7 @@ function(_find_mpg123)
     endif()
 
     find_package(PkgConfig QUIET)
-    pkg_check_modules(PC_Mpg123_ QUIET libmpg123)
+    pkg_check_modules(PC_Mpg123 QUIET libmpg123)
 
     find_path(Mpg123_INCLUDE_DIR
         NAMES mpg123.h
