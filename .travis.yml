@@ -36,10 +36,12 @@ matrix:
   - os: linux
     name: Xenial-ARM64
     dist: xenial
-    arch: arm64
-    before_install:
-    # Required for ARM64 version of libfdk-aac
-    - sudo add-apt-repository -y ppa:mamarley/tvheadend-git-stable
+    arch: arm6
+    addons:
+      apt:
+        sources:
+        # Required for ARM64 version of libfdk-aac
+        - sourceline: ppa:mamarley/tvheadend-git-stable
   - os: windows
     name: Win32
     env: TARGET_PLATFORM=Win32
