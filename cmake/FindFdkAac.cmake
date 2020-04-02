@@ -43,7 +43,7 @@ function(_find_fdk_aac)
 
     if(FdkAac_FOUND)
         set(FdkAac_FOUND "${FdkAac_FOUND}" PARENT_SCOPE)
-        set(FDKAAC_FOUND "${PORTAUDIO_FOUND}" PARENT_SCOPE)
+        set(FDKAAC_FOUND "${FdkAac_FOUND}" PARENT_SCOPE)
         set(FdkAac_INCLUDE_DIRS "${FdkAac_INCLUDE_DIR}" PARENT_SCOPE)
         set(FdkAac_LIBRARIES "${FdkAac_LIBRARY}" PARENT_SCOPE)
         if(NOT TARGET FdkAac::libfdk-aac)

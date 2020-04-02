@@ -44,7 +44,7 @@ function(_find_mpg123)
 
     if(Mpg123_FOUND)
         set(Mpg123_FOUND "${Mpg123_FOUND}" PARENT_SCOPE)
-        set(MPG123_FOUND "${PORTAUDIO_FOUND}" PARENT_SCOPE)
+        set(MPG123_FOUND "${Mpg123_FOUND}" PARENT_SCOPE)
         set(Mpg123_INCLUDE_DIRS "${Mpg123_INCLUDE_DIR}" PARENT_SCOPE)
         set(Mpg123_LIBRARIES "${Mpg123_LIBRARY}" PARENT_SCOPE)
         if(NOT TARGET Mpg123::libmpg123)
