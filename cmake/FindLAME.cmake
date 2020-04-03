@@ -67,9 +67,6 @@ function(_find_lame)
                 IMPORTED_LOCATION "${LAME_LIBRARY}"
             )
             if(WIN32)
-                set_target_properties(LAME::libmp3lame PROPERTIES
-                    INTERFACE_COMPILE_DEFINITIONS WIN32
-                )
                 include("${CMAKE_CURRENT_LIST_DIR}/GetSidecarDllDirectory.cmake")
                 setup_library_dll_directory(LAME::libmp3lame)
             endif()

@@ -7,9 +7,8 @@ set -o pipefail
 
 function winstall_lame {
     local target_platform="${1:-x64}"
-    local url="${2:-https://www.videohelp.com/download/lame3.100-64-20190806.zip}"
-    local hash="${3:-3327c37ab011009fccef428fe9aa86b8652b8bc9}"
-    local header_url="${4:-https://sourceforge.net/p/lame/svn/HEAD/tree/tags/RELEASE__3_100/lame/include/lame.h?format=raw}"
+    local url="${2:-https://github.com/andrzejc/libmp3lame-windows-release/releases/download/3.100/lame-3.100-win-amd64.zip}"
+    local hash="${3:-b1286ef97251d1f64e1f47a87cf462eb84447561}"
     local this_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
     local temp_dir=
     temp_dir=$( mktemp -d )
@@ -19,15 +18,7 @@ function winstall_lame {
     binary_archive=$( "${this_dir}/safe-download" "${url}" "${temp_dir}" "${hash}" )
     local install_dir=
     install_dir=$( "${this_dir}/get-windows-program-files-dir" "${target_platform}" )
-    mkdir -p "${install_dir}/LAME/include/lame"
-    >&2 unzip "${binary_archive}" -d "${install_dir}/LAME"
-
-    for f in "${install_dir}/LAME"/*.dll; do
-        "${this_dir}/dll2lib" "${f}" "${target_platform}"
-    done
-
-    wget --no-verbose --show-progress --wait=2 --random-wait \
-        --tries=0 --progress=dot:mega -O "${install_dir}/LAME/include/lame/lame.h" "${header_url}"
+    >&2 unzip "${binary_archive}" -d "${install_dir}"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
