@@ -2,9 +2,8 @@ include(FindPackageHandleStandardArgs)
 
 # Create function scope to avoid polluting global namespace
 function(_find_lame)
-    set(LAME_CANDIDATES mp3lame)
+    set(LAME_CANDIDATES mp3lame libmp3lame)
     if(MSVC)
-        list(APPEND LAME_CANDIDATES lame_enc)
         if(NOT DEFINED LAME_ROOT AND NOT DEFINED ENV{LAME_ROOT})
             include("${CMAKE_CURRENT_LIST_DIR}/GetWindowsProgramFilesDir.cmake")
             get_windows_program_files_dir(program_files)
