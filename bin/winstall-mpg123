@@ -21,10 +21,12 @@ function winstall_mpg123 {
 
     local install_dir=
     install_dir=$( "${this_dir}/get-windows-program-files-dir" "${target_platform}" )
-    mkdir -p "${install_dir}/mpg123"
-    >&2 unzip "${binary_archive}" -d "${install_dir}/mpg123"
+    >&2 unzip "${binary_archive}" -d "${install_dir}"
 
-    for f in "${install_dir}/mpg123"/*.dll; do
+    local subdir="${binary_url%.zip}"
+    subdir="${subdir##*/}"
+
+    for f in "${install_dir}/${subdir}"/*.dll; do
         "${this_dir}/dll2lib" "${f}" "${target_platform}"
     done
 }
