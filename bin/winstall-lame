@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+## Wrapper for downloading and extracting import library from LAME binary release
+## If no params provided, use 3.100
+## winstall-lame [<target-platform>] [<binary-url> <binary-hash> <header-url>]
+set -eu
+set -o pipefail
+
+function winstall_lame {
+    local target_platform="${1:-x64}"
+    local url="${2:-https://www.videohelp.com/download/lame3.100-64-20190806.zip}"
+    local hash="${3:-3327c37ab011009fccef428fe9aa86b8652b8bc9}"
+    local header_url="${4:-https://sourceforge.net/p/lame/svn/HEAD/tree/tags/RELEASE__3_100/lame/include/lame.h?format=raw}"
+    local this_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+    local temp_dir=
+    temp_dir=$( mktemp -d )
+    trap "> /dev/null 2>&1 rm -rf '${temp_dir}' || true" EXIT
+
+    local binary_archive=
+    binary_archive=$( "${this_dir}/safe-download" "${url}" "${temp_dir}" "${hash}" )
+    local install_dir=
+    install_dir=$( "${this_dir}/get-windows-program-files-dir" "${target_platform}" )
+    mkdir -p "${install_dir}/LAME/include/lame"
+    >&2 unzip "${binary_archive}" -d "${install_dir}/LAME"
+
+    for f in "${install_dir}/LAME"/*.dll; do
+        "${this_dir}/dll2lib" "${f}" "${target_platform}"
+    done
+
+    wget --no-verbose --show-progress --wait=2 --random-wait \
+        --tries=0 --progress=dot:mega -O "${install_dir}/LAME/include/lame/lame.h" "${header_url}"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    winstall_lame "$@"
+fi
