@@ -7,7 +7,6 @@ function(_find_portaudio)
         if(NOT DEFINED PortAudio_ROOT AND NOT DEFINED ENV{PortAudio_ROOT})
             include("${CMAKE_CURRENT_LIST_DIR}/GetWindowsProgramFilesDir.cmake")
             get_windows_program_files_dir(program_files)
-            # This will cause ./lib and ./include to be searched
             list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/PortAudio")
         endif()
         # Suffixes added by CMake-built release
@@ -16,10 +15,10 @@ function(_find_portaudio)
         elseif(CMAKE_GENERATOR_PLATFORM MATCHES ".*32")
             list(APPEND PortAudio_CANDIDATES portaudio_x86)
         endif()
+    else()
+        find_package(PkgConfig QUIET)
+        pkg_check_modules(PC_PortAudio QUIET portaudio-2.0)
     endif()
-
-    find_package(PkgConfig QUIET)
-    pkg_check_modules(PC_PortAudio QUIET portaudio-2.0)
 
     find_path(PortAudio_INCLUDE_DIR
         NAMES portaudio.h

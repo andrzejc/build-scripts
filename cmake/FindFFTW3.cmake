@@ -12,26 +12,17 @@ function(_find_fftw3_include_dir)
     if(MSVC)
         if(NOT DEFINED FFTW3_ROOT AND NOT DEFINED ENV{FFTW3_ROOT})
             get_windows_program_files_dir(program_files)
-            # This will cause ./include to be searched
             list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/FFTW3")
-            # This will search ./ dir too
-            # TODO testing
-            # set(paths_and_hints PATHS "${program_files}/FFTW3")
-        elseif(DEFINED FFTW3_ROOT)
-            set(paths_and_hints HINTS "${FFTW3_ROOT}")
-        else()
-            file(TO_CMAKE_PATH "$ENV{FFTW3_ROOT}" root)
-            set(paths_and_hints HINTS "${root}")
         endif()
         if(CMAKE_GENERATOR_PLATFORM MATCHES ".*64")
             list(APPEND paths_and_hints PATH_SUFFIXES x64 Win64 x64/include Win64/include)
         elseif(CMAKE_GENERATOR_PLATFORM MATCHES ".*32")
             list(APPEND paths_and_hints PATH_SUFFIXES x86 Win32 x86/include Win32/include)
         endif()
+    else()
+        find_package(PkgConfig QUIET)
+        pkg_check_modules(PC_FFTW3 QUIET fftw3)
     endif()
-
-    find_package(PkgConfig QUIET)
-    pkg_check_modules(PC_FFTW3 QUIET fftw3)
 
     find_path(FFTW3_INCLUDE_DIR
         NAMES fftw3.h
@@ -80,10 +71,10 @@ function(_find_fftw3_library variant)
         elseif(CMAKE_GENERATOR_PLATFORM MATCHES ".*32")
             list(APPEND paths_and_hints PATH_SUFFIXES x86 Win32 x86/lib Win32/lib)
         endif()
+    else()
+        find_package(PkgConfig QUIET)
+        pkg_check_modules("PC_FFTW3${variant}" QUIET "fftw3${variant}")
     endif()
-
-    find_package(PkgConfig QUIET)
-    pkg_check_modules("PC_FFTW3${variant}" QUIET "fftw3${variant}")
 
     find_library("FFTW3_libfftw3${variant}_LIBRARY"
         NAMES ${candidates}

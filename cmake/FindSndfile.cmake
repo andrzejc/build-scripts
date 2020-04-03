@@ -11,19 +11,19 @@ function(_find_libsndfile)
             list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/Mega-Nerd/libsndfile")
         endif()
         list(INSERT Sndfile_CANDIDATES 0 libsndfile-1)
+    else()
+        find_package(PkgConfig QUIET)
+        pkg_check_modules(PC_Sndfile QUIET sndfile)
     endif()
-
-    find_package(PkgConfig QUIET)
-    pkg_check_modules(PC_Sndfile QUIET sndfile)
 
     find_path(Sndfile_INCLUDE_DIR
         NAMES sndfile.h
-        HINTS ${PC_Sndfile_INCLUDEDIR}
+        HINTS "${PC_Sndfile_INCLUDEDIR}"
         DOC "Directory of libsndfile headers"
     )
     find_library(Sndfile_LIBRARY
         NAMES ${PC_Sndfile_LIBRARIES} ${Sndfile_CANDIDATES}
-        HINTS ${PC_Sndfile_LIBDIR}
+        HINTS "${PC_Sndfile_LIBDIR}"
         DOC "Directory of libsndfile library file"
     )
     mark_as_advanced(Sndfile_INCLUDE_DIR Sndfile_LIBRARY)
