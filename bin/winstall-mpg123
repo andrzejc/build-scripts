@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-## Wrapper for downloading and extracting import library from FFTW3 binary release
-## If no params provided, use stable 3.3.5
-## winstall-fftw3 [<target-platform>] [<binary-url> <binary-hash>]
+## Wrapper for downloading and extracting import library from mpg123 binary release
+## If no params provided, use 1.25.13
+## winstall-mpg123[<target-platform>] [<binary-url> <binary-hash>]
 set -eu
 set -o pipefail
 
-function winstall_fftw3 {
+function winstall_mpg123 {
     local target_platform="${1:-x64}"
-    local binary_url="${2:-ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip}"
-    local binary_hash="${3:-409f4a5272506eb7422d265a68a02deeefcb5c17}"
+    local binary_url="${2:-http://mpg123.de/download/win64/1.25.13/mpg123-1.25.13-x86-64.zip}"
+    local binary_hash="${3:-809e847de9169e63b65d1593d163977c2fca5a65}"
 
     local temp_dir=
     temp_dir=$( mktemp -d )
@@ -21,14 +21,14 @@ function winstall_fftw3 {
 
     local install_dir=
     install_dir=$( "${this_dir}/get-windows-program-files-dir" "${target_platform}" )
-    mkdir -p "${install_dir}/FFTW3"
-    >&2 unzip "${binary_archive}" -d "${install_dir}/FFTW3"
+    mkdir -p "${install_dir}/mpg123"
+    >&2 unzip "${binary_archive}" -d "${install_dir}/mpg123"
 
-    for f in "${install_dir}/FFTW3"/*.dll; do
+    for f in "${install_dir}/mpg123"/*.dll; do
         "${this_dir}/dll2lib" "${f}" "${target_platform}"
     done
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    winstall_fftw3 "$@"
+    winstall_mpg123 "$@"
 fi
