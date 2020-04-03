@@ -3,6 +3,7 @@ include(FindPackageHandleStandardArgs)
 # Create function scope to avoid polluting global namespace
 function(_find_mpg123)
     set(Mpg123_CANDIDATES mpg123 libmpg123)
+    set(paths_and_hints)
     if(MSVC)
         list(APPEND Mpg123_CANDIDATES libmpg123-0)
         if(NOT DEFINED Mpg123_ROOT AND NOT DEFINED ENV{Mpg123_ROOT})
@@ -14,26 +15,30 @@ function(_find_mpg123)
                 set(pattern "mpg123-*-x86")
             endif()
             file(GLOB match RELATIVE "${program_files}" "${program_files}/${pattern}")
+            message(STATUS "mpg123 match: ${match}")
             if(match)
-                list(INSERT CMAKE_PREFIX_PATH 0 "${program_files}/${match}")
+                set(paths_and_hints PATHS "${program_files}/${match}")
                 if(match MATCHES "^mpg123-(.*)-x86(-64)?$")
+                    message(STATUS "version: ${CMAKE_MATCH_1}")
                     set(PC_Mpg123_VERSION "${CMAKE_MATCH_1}")
                 endif()
             endif()
         endif()
+    else()
+        find_package(PkgConfig QUIET)
+        pkg_check_modules(PC_Mpg123 QUIET libmpg123)
     endif()
-
-    find_package(PkgConfig QUIET)
-    pkg_check_modules(PC_Mpg123 QUIET libmpg123)
 
     find_path(Mpg123_INCLUDE_DIR
         NAMES mpg123.h
         HINTS "${PC_Mpg123_INCLUDEDIR}"
+        ${paths_and_hints}
         DOC "Directory of libmpg123 headers"
     )
     find_library(Mpg123_LIBRARY
         NAMES ${Mpg123_CANDIDATES}
         HINTS "${PC_Mpg123_LIBDIR}"
+        ${paths_and_hints}
         DOC "Path of libmpg123 library file"
     )
     mark_as_advanced(Mpg123_INCLUDE_DIR Mpg123_LIBRARY)
