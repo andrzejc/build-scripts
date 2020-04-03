@@ -32,7 +32,7 @@ function(_find_lame)
         set(LAME_VERSION_ARG VERSION_VAR PC_LAME_VERSION)
     endif()
 
-    if(LAME_LIBRARY AND LAME_INCLUDE_DIR)
+    if(LAME_LIBRARY AND LAME_INCLUDE_DIR AND NOT PC_LAME_VERSION)
         project(_FindLAME_get_lame_version C)
         try_run(run_res compile_ok
             "${CMAKE_CURRENT_BINARY_DIR}/FindLAME"
