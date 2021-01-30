@@ -1,9 +1,6 @@
 if (POLICY CMP0042)
 	cmake_policy(SET CMP0042 NEW)
 endif()
-if (POLICY CMP0054)
-	cmake_policy(SET CMP0054 OLD)
-endif()
 if (POLICY CMP0063)
 	# Honor visibility properties for all target types.
 	cmake_policy(SET CMP0063 NEW)
