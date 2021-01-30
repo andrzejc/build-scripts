@@ -33,7 +33,7 @@ include(CMakeParseArguments)
 macro(_py_compile_one _INPUT _OUTPUT _TARGET _PYFLAGS)
 	add_custom_command(
 		OUTPUT "${_OUTPUT}"
-		COMMAND "${PYTHON_EXECUTABLE}" ${_PYFLAGS}
+		COMMAND "${Python3_EXECUTABLE}" ${_PYFLAGS}
 			"${USE_PYTHON_MODULE_DIR}/use_python_compile.py" "${_INPUT}" "${_OUTPUT}"
 		MAIN_DEPENDENCY "${_INPUT}"
 		COMMENT "Precompiling Python file '${_TARGET}'"
@@ -54,7 +54,7 @@ macro(_py_compile_dir _DIR _PYSUFFIX _PYFLAGS)
 		VERBATIM)
 	add_custom_command(
 		OUTPUT "${_DIR}/.py_compile.done" "${_DIR}/.py_compile.done.PHONY"
-		COMMAND "${PYTHON_EXECUTABLE}" ${_PYFLAGS}
+		COMMAND "${Python3_EXECUTABLE}" ${_PYFLAGS}
 				"${USE_PYTHON_MODULE_DIR}/use_python_compile.py" "${_DIR}"
 		DEPENDS "${_DIR}/.py_compile"
 		COMMENT "Precompiling Python module '${_DIR}'"
@@ -64,8 +64,7 @@ macro(_py_compile_dir _DIR _PYSUFFIX _PYFLAGS)
 		PROPERTIES SYMBOLIC ON)
 endmacro(_py_compile_dir)
 
-set(Python_ADDITIONAL_VERSIONS 3.5 3.4)
-find_package(PythonInterp 3.6 REQUIRED)
+find_package(Python3 3.6 REQUIRED)
 
 function(py_compile)
 	cmake_parse_arguments(pyc
@@ -227,7 +226,7 @@ function(py_run)
 	add_custom_command(OUTPUT ${pyr_OUTPUT} TARGET ${pyr_TARGET}
 		DEPENDS ${pyr_DEPENDS}
 		COMMAND "${CMAKE_COMMAND}" -E env "PYTHONPATH=${pp}"
-			"${PYTHON_EXECUTABLE}" ${pyflags} ${cmd})
+			"${Python3_EXECUTABLE}" ${pyflags} ${cmd})
 endfunction(py_run)
 
 
@@ -285,5 +284,5 @@ function(py_test)
 	# message(STATUS "cmd: ${cmd}")
 	add_test(NAME "${pyt_NAME}"
 		COMMAND "${CMAKE_COMMAND}" -E env "PYTHONPATH=${pp}"
-			"${PYTHON_EXECUTABLE}" ${pyflags} ${cmd})
+			"${Python3_EXECUTABLE}" ${pyflags} ${cmd})
 endfunction(py_test)
