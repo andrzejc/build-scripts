@@ -1,0 +1,35 @@
+if(DEFINED _SetupSidecarDllIncluded)
+    return()
+endif()
+set(_SetupSidecarDllIncluded 1)
+
+function(get_sidecar_dll var_dir var_dll_path lib_path)
+    get_filename_component(lib_name "${lib_path}" NAME)
+    get_filename_component(lib_dir "${lib_path}" DIRECTORY)
+    string(REGEX REPLACE "\\.[lL][iI][bB]$" ".dll" dll_name "${lib_name}")
+    foreach(suff "" /bin /.. /../bin)
+        if(EXISTS "${lib_dir}${suff}/${dll_name}")
+            set("${var_dir}" "${lib_dir}${suff}" PARENT_SCOPE)
+            set("${var_dll_path}" "${lib_dir}${suff}/${dll_name}" PARENT_SCOPE)
+            return()
+        endif()
+    endforeach()
+    set("${var_dir}" "${var_dir}-NOTFOUND" PARENT_SCOPE)
+    set("${var_dll_path}" "${var_dll_path}-NOTFOUND" PARENT_SCOPE)
+endfunction()
+
+function(setup_sidecar_dll target)
+    if(NOT WIN32)
+        return()
+    endif()
+    get_target_property(lib_path "${target}" IMPORTED_LOCATION)
+    get_sidecar_dll(dll_dir dll_location "${lib_path}")
+    if(dll_dir)
+        set_target_properties("${target}" PROPERTIES
+            DLL_DIRECTORY "${dll_dir}"
+            DLL_LOCATION "${dll_location}"
+            IMPORTED_IMPLIB "${lib_path}"
+        )
+        set_property(TARGET "${target}" PROPERTY IMPORTED_LOCATION)
+    endif()
+endfunction()
