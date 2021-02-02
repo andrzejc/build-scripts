@@ -12,7 +12,7 @@ foreach(variant "" f l q)
     if(WIN32)
         string(REPLACE ";" "\\;" escaped_path "$ENV{PATH}")
         set_tests_properties(fftw3${variant}-found-and-linked PROPERTIES
-            ENVIRONMENT "PATH=${escaped_path}\\;$<SHELL_PATH:$<TARGET_PROPERTY:FFTW3::libfftw3${variant},DLL_DIRECTORY>>"
+            ENVIRONMENT "PATH=${escaped_path}\\;$<SHELL_PATH:$<TARGET_PROPERTY:FFTW3::libfftw3${variant},DLL_DIRECTORIES>>"
         )
     endif()
 endforeach(variant)

@@ -138,22 +138,18 @@ if(FFTW3_FOUND)
     set(FFTW3_INCLUDE_DIRS "${FFTW3_INCLUDE_DIR}")
     foreach(comp IN LISTS FFTW3_FIND_COMPONENTS)
         if(NOT TARGET "FFTW3::${comp}")
-            add_library("FFTW3::${comp}" UNKNOWN IMPORTED)
+            add_imported_library("FFTW3::${comp}" "${FFTW3_${comp}_LIBRARY}")
             set_target_properties("FFTW3::${comp}" PROPERTIES
                 IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                 INTERFACE_INCLUDE_DIRECTORIES "${FFTW3_INCLUDE_DIR}"
-                IMPORTED_LOCATION "${FFTW3_${comp}_LIBRARY}"
             )
-            setup_sidecar_dll("FFTW3::${comp}")
         endif()
         if(NOT TARGET "FFTW3::${comp}_threads" AND FFTW3_${comp}_threads_LIBRARY)
-            add_library("FFTW3::${comp}_threads" UNKNOWN IMPORTED)
+            add_imported_library("FFTW3::${comp}_threads" "${FFTW3_${comp}_threads_LIBRARY}")
             set_target_properties("FFTW3::${comp}_threads" PROPERTIES
                 IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                 INTERFACE_INCLUDE_DIRECTORIES "${FFTW3_INCLUDE_DIR}"
-                IMPORTED_LOCATION "${FFTW3_${comp}_threads_LIBRARY}"
             )
-            setup_sidecar_dll("FFTW3::${comp}_threads")
             set_property(TARGET "FFTW3::${comp}" APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES "FFTW3::${comp}_threads"
             )

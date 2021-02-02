@@ -40,16 +40,12 @@ function(_find_libsndfile)
         set(Sndfile_INCLUDE_DIRS "${Sndfile_INCLUDE_DIR}" PARENT_SCOPE)
         set(Sndfile_LIBRARIES "${Sndfile_LIBRARY}" PARENT_SCOPE)
         if(NOT TARGET Sndfile::libsndfile)
-            add_library(Sndfile::libsndfile UNKNOWN IMPORTED)
+            include("${CMAKE_CURRENT_LIST_DIR}/SetupSidecarDll.cmake")
+            add_imported_library(Sndfile::libsndfile "${Sndfile_LIBRARY}")
             set_target_properties(Sndfile::libsndfile PROPERTIES
                 IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                 INTERFACE_INCLUDE_DIRECTORIES "${Sndfile_INCLUDE_DIR}"
-                IMPORTED_LOCATION "${Sndfile_LIBRARY}"
             )
-            if(WIN32)
-                include("${CMAKE_CURRENT_LIST_DIR}/SetupSidecarDll.cmake")
-                setup_sidecar_dll(Sndfile::libsndfile)
-            endif()
         endif()
         if(DEFINED Sndfile_VERSION)
             set(Sndfile_VERSION "${Sndfile_VERSION}" PARENT_SCOPE)

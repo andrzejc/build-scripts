@@ -47,16 +47,12 @@ function(_find_portaudio)
         set(PortAudio_INCLUDE_DIRS "${PortAudio_INCLUDE_DIR}" PARENT_SCOPE)
         set(PortAudio_LIBRARIES "${PortAudio_LIBRARY}" PARENT_SCOPE)
         if(NOT TARGET PortAudio::libportaudio)
-            add_library(PortAudio::libportaudio UNKNOWN IMPORTED)
+            include("${CMAKE_CURRENT_LIST_DIR}/SetupSidecarDll.cmake")
+            add_imported_library(PortAudio::libportaudio "${PortAudio_LIBRARY}")
             set_target_properties(PortAudio::libportaudio PROPERTIES
                 IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                 INTERFACE_INCLUDE_DIRECTORIES "${PortAudio_INCLUDE_DIR}"
-                IMPORTED_LOCATION "${PortAudio_LIBRARY}"
             )
-            if(WIN32)
-                include("${CMAKE_CURRENT_LIST_DIR}/SetupSidecarDll.cmake")
-                setup_sidecar_dll(PortAudio::libportaudio)
-            endif()
         endif()
         if(DEFINED PortAudio_VERSION)
             set(PortAudio_VERSION "${PortAudio_VERSION}" PARENT_SCOPE)

@@ -65,16 +65,12 @@ function(_find_lame)
             set(LAME_VERSION "${LAME_VERSIO}" PARENT_SCOPE)
         endif()
         if(NOT TARGET LAME::libmp3lame)
-            add_library(LAME::libmp3lame UNKNOWN IMPORTED)
+            include("${CMAKE_CURRENT_LIST_DIR}/SetupSidecarDll.cmake")
+            add_imported_library(LAME::libmp3lame "${LAME_LIBRARY}")
             set_target_properties(LAME::libmp3lame PROPERTIES
                 IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                 INTERFACE_INCLUDE_DIRECTORIES "${LAME_INCLUDE_DIR}"
-                IMPORTED_LOCATION "${LAME_LIBRARY}"
             )
-            if(WIN32)
-                include("${CMAKE_CURRENT_LIST_DIR}/SetupSidecarDll.cmake")
-                setup_sidecar_dll(LAME::libmp3lame)
-            endif()
         endif()
         if(DEFINED LAME_VERSION)
             set(LAME_VERSION "${LAME_VERSION}" PARENT_SCOPE)

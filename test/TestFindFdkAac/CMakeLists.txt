@@ -7,7 +7,7 @@ if(FdkAac_FOUND)
 
     set(wd_arg)
     if(WIN32)
-        set(wd_arg WORKING_DIRECTORY $<TARGET_PROPERTY:FdkAac::libfdk-aac,DLL_DIRECTORY>)
+        set(wd_arg WORKING_DIRECTORY $<TARGET_PROPERTY:FdkAac::libfdk-aac,DLL_DIRECTORIES>)
     endif()
 
     add_test(NAME fdk-aac-found-and-linked

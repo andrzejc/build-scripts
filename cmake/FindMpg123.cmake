@@ -53,16 +53,12 @@ function(_find_mpg123)
         set(Mpg123_INCLUDE_DIRS "${Mpg123_INCLUDE_DIR}" PARENT_SCOPE)
         set(Mpg123_LIBRARIES "${Mpg123_LIBRARY}" PARENT_SCOPE)
         if(NOT TARGET Mpg123::libmpg123)
-            add_library(Mpg123::libmpg123 UNKNOWN IMPORTED)
+            include("${CMAKE_CURRENT_LIST_DIR}/SetupSidecarDll.cmake")
+            add_imported_library(Mpg123::libmpg123 "${Mpg123_LIBRARY}")
             set_target_properties(Mpg123::libmpg123 PROPERTIES
                 IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                 INTERFACE_INCLUDE_DIRECTORIES "${Mpg123_INCLUDE_DIR}"
-                IMPORTED_LOCATION "${Mpg123_LIBRARY}"
             )
-            if(WIN32)
-                include("${CMAKE_CURRENT_LIST_DIR}/SetupSidecarDll.cmake")
-                setup_sidecar_dll(Mpg123::libmpg123)
-            endif()
         endif()
         if(DEFINED Mpg123_VERSION)
             set(Mpg123_VERSION "${Mpg123_VERSION}" PARENT_SCOPE)

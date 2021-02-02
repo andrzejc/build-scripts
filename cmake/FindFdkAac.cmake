@@ -47,16 +47,12 @@ function(_find_fdk_aac)
         set(FdkAac_INCLUDE_DIRS "${FdkAac_INCLUDE_DIR}" PARENT_SCOPE)
         set(FdkAac_LIBRARIES "${FdkAac_LIBRARY}" PARENT_SCOPE)
         if(NOT TARGET FdkAac::libfdk-aac)
-            add_library(FdkAac::libfdk-aac UNKNOWN IMPORTED)
+            include("${CMAKE_CURRENT_LIST_DIR}/SetupSidecarDll.cmake")
+            add_imported_library(FdkAac::libfdk-aac "${FdkAac_LIBRARY}")
             set_target_properties(FdkAac::libfdk-aac PROPERTIES
                 IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                 INTERFACE_INCLUDE_DIRECTORIES "${FdkAac_INCLUDE_DIR}"
-                IMPORTED_LOCATION "${FdkAac_LIBRARY}"
             )
-            if(WIN32)
-                include("${CMAKE_CURRENT_LIST_DIR}/SetupSidecarDll.cmake")
-                setup_sidecar_dll(FdkAac::libfdk-aac)
-            endif()
         endif()
         if(DEFINED FdkAac_VERSION)
             set(FdkAac_VERSION "${FdkAac_VERSION}" PARENT_SCOPE)
