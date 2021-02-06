@@ -1,0 +1,99 @@
+#! /usr/bin/env bash
+# Based on https://gist.github.com/DanielSerdyukov/188d47e29150622352f1 with fixes
+set -e -o pipefail
+set +x
+
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ICU4C_SOURCE_URL="${ICU4C_SOURCE_URL:-https://github.com/unicode-org/icu/releases/download/release-68-2/icu4c-68_2-src.tgz}"
+wget -c -nv "${ICU4C_SOURCE_URL}"
+
+ICU4C_TGZ="${ICU4C_SOURCE_URL##*/}"
+ICU4C_STEM="${ICU4C_TGZ%%-src.t*}"
+tar xf "${ICU4C_TGZ}"
+
+if [[ -n "${ICU4C_BUILD_DATA:-}" ]]
+then
+    ICU4C_DATA_URL="${ICU4C_SOURCE_URL%/*}/${ICU4C_STEM}-data.zip"
+    wget -c -nv "${ICU4C_DATA_URL}"
+    mv icu/source/data icu/source/data.orig
+    unzip "${ICU4C_STEM}-data.zip" -d icu/source
+fi
+
+export CFLAGS="${CFLAGS:-} -Os"
+export CXXFLAGS="${CXXFLAGS:-} --std=c++11"
+
+pushd icu
+echo "*" > .gitignore
+mkdir -p linux
+pushd linux
+
+../source/runConfigureICU Linux --prefix="${PWD}/prebuilt" \
+    --enable-static \
+    --enable-shared=no \
+    --enable-extras=no \
+    --enable-strict=no \
+    --enable-icuio=no \
+    --enable-layout=no \
+    --enable-layoutex=no \
+    --enable-tools=yes \
+    --enable-tests=no \
+    --enable-samples=no \
+    --enable-dyload=no
+
+make -j8
+
+popd
+
+CROSS_BUILD_DIR=$(realpath linux)
+INSTALL_DIR="${INSTALL_DIR:-${HOME}/android-deps}"
+INSTALL_SUBDIR="${INSTALL_DIR}/${ICU4C_STEM}"
+
+function build_single_target {
+    export CFLAGS="-Os -fPIC"
+    export CXXFLAGS="--std=c++11 -fPIC"
+    export -n LDFLAGS
+    source "${THIS_DIR}/android-setup-toolchain.sh"
+
+    case "${TARGET}" in
+    armv7a-*)
+        export CFLAGS="${CFLAGS} -march=armv7-a -mfloat-abi=softfp -mfpu=neon -fsigned-char"
+        export CXXFLAGS="${CXXFLAGS} -march=armv7-a -mfloat-abi=softfp -mfpu=neon -fsigned-char"
+        export LDFLAGS="-march=armv7-a -Wl,--fix-cortex-a8"
+        ;;
+    i686-*)
+        export CFLAGS="${CFLAGS} -march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32"
+        export CXXFLAGS="${CXXFLAGS} -march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32"
+        ;;
+    esac
+
+    mkdir -p "${ABI}"
+    pushd "${ABI}"
+
+    ../source/configure --prefix="${INSTALL_SUBDIR}/${ABI}" \
+        --host="${TARGET}" \
+        --enable-static \
+        --enable-shared=no \
+        --enable-extras=no \
+        --enable-strict=no \
+        --enable-icuio=no \
+        --enable-layout=no \
+        --enable-layoutex=no \
+        --enable-tools=no \
+        --enable-tests=no \
+        --enable-samples=no \
+        --enable-dyload=no \
+        --with-cross-build="${CROSS_BUILD_DIR}" \
+        --with-data-packaging=static
+
+    make -j8 install
+    popd
+}
+
+TARGETS=(armv7a-linux-androideabi aarch64-linux-android i686-linux-android x86_64-linux-android)
+for target in "${TARGETS[@]}"
+do
+    TARGET="${target}" build_single_target "$@"
+done
+pushd "${INSTALL_DIR}"
+tar -chaf "${ICU4C_STEM}.tar.bz2" "${ICU4C_STEM}"
+popd

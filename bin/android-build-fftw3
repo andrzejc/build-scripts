@@ -1,0 +1,44 @@
+#! /usr/bin/env bash
+set -e -o pipefail
+set +x
+
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+FFTW3_SOURCE_URL="${FFTW3_SOURCE_URL:-http://www.fftw.org/fftw-3.3.9.tar.gz}"
+wget -c -nv "${FFTW3_SOURCE_URL}"
+
+FFTW3_TGZ="${FFTW3_SOURCE_URL##*/}"
+FFTW3_STEM="${FFTW3_TGZ%%.tar*}"
+INSTALL_DIR="${INSTALL_DIR:-${HOME}/android-deps}"
+INSTALL_SUBDIR="${INSTALL_DIR}/${FFTW3_STEM}"
+
+tar xf "${FFTW3_TGZ}"
+
+function build_single_target {
+    source "${THIS_DIR}/android-setup-toolchain.sh"
+    export CFLAGS=
+    export CXXFLAGS=
+    ./configure \
+        --prefix="${INSTALL_SUBDIR}/${ABI}" \
+        --host="${TARGET}" \
+        --enable-static \
+        --enable-shared=no \
+        --enable-threads \
+        --with-pic \
+        "$@"
+    make -j8 install
+    make distclean
+}
+
+pushd "${FFTW3_STEM}"
+echo "*" > .gitignore
+TARGETS=(armv7a-linux-androideabi aarch64-linux-android i686-linux-android x86_64-linux-android)
+for target in "${TARGETS[@]}"
+do
+    TARGET="${target}" build_single_target "$@"
+    TARGET="${target}" build_single_target --enable-single "$@"
+    TARGET="${target}" build_single_target --enable-long-double "$@"
+done
+popd
+pushd "${INSTALL_DIR}"
+tar -chaf "${FFTW3_STEM}.tar.bz2" "${FFTW3_STEM}"
+popd

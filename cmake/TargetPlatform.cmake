@@ -33,6 +33,14 @@ int main() {return 0;}
 " TARGET_PLATFORM_THUMB)
 
 check_cxx_source_compiles("
+#if defined(__aarch64__)
+int main() {return 0;}
+#else
+#error Not ARM platform
+#endif
+" TARGET_PLATFORM_ARM64)
+
+check_cxx_source_compiles("
 #if defined(__ia64) || defined(__itanium__) || defined(_M_IA64)
 int main() {return 0;}
 #else

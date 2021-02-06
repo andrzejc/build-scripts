@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+## Build all boost targets and install them in ${INSTALL_DIR}/${ABI}
+set -e -o pipefail
+set -x
+
+BOOST_VERSION="${BOOST_VERSION:-1.74.0}"
+BOOST_STEM="boost-${BOOST_VERSION}"
+INSTALL_DIR="${INSTALL_DIR:-${HOME}/android-deps}"
+INSTALL_SUBDIR="${INSTALL_DIR}/${BOOST_STEM}"
+NDK="${NDK:-${HOME}/Android/Sdk/ndk/22.0.7026061}"
+API="${API:-21}"
+ICU4C_PATH="${ICU4C_PATH:-${HOME}/android-deps/icu4c-68_2}"
+
+[[ -d Boost-for-Android ]] || git clone --depth 1 https://github.com/moritz-wundke/Boost-for-Android.git
+pushd Boost-for-Android
+echo "*" > .gitignore
+
+# The most recent NDK at time of writing this is 22.0, so we need to patch build-android.sh
+sed \
+    -e "s#\`pwd\`/../libiconv-libicu-android/\$ARCH#${ICU4C_PATH}/\$ARCH#" \
+    -e 's/"21.0"|"21.1"|"21.2"|"21.3")/"21.0"|"21.1"|"21.2"|"21.3"|"22.0")/' \
+    -i build-android.sh
+
+mkdir -p "${INSTALL_SUBDIR}"
+CFLAGS=-fPIC \
+CXXFLAGS=-fPIC \
+VERBOSE=no \
+    ./build-android.sh "${NDK}" --boost="${BOOST_VERSION}" \
+        --layout=system \
+        --prefix="${INSTALL_SUBDIR}" \
+        --arch=arm64-v8a,armeabi-v7a,x86,x86_64 \
+        --target-version="${API}"
+
+popd
+pushd "${INSTALL_DIR}"
+tar -chaf "${BOOST_STEM}.tar.bz2" "${BOOST_STEM}"
+popd
