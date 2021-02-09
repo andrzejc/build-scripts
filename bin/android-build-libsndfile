@@ -3,42 +3,7 @@ set -e -o pipefail
 set +x
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-SNDFILE_SOURCE_URL="${SNDFILE_SOURCE_URL:-https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2}"
-wget -c -nv "${SNDFILE_SOURCE_URL}"
-
-SNDFILE_TGZ="${SNDFILE_SOURCE_URL##*/}"
-SNDFILE_STEM="${SNDFILE_TGZ%%.tar*}"
-INSTALL_DIR="${INSTALL_DIR:-${HOME}/android-deps}"
-INSTALL_SUBDIR="${INSTALL_DIR}/${SNDFILE_STEM}"
-
-tar xf "${SNDFILE_TGZ}"
-
-function build_single_target {
-    export CFLAGS=
-    export CXXFLAGS=
-    source "${THIS_DIR}/android-setup-toolchain.sh"
-    ./configure \
-        --prefix="${INSTALL_SUBDIR}/${ABI}" \
-        --host="${TARGET}" \
-        --enable-static \
-        --enable-shared=no \
-        --disable-alsa \
-        --disable-full-suite \
-        --with-pic \
-        "$@"
-    make -j8 install
-    make distclean
-}
-
-
-pushd "${SNDFILE_STEM}"
-echo "*" > .gitignore
-TARGETS=(armv7a-linux-androideabi aarch64-linux-android i686-linux-android x86_64-linux-android)
-for target in "${TARGETS[@]}"
-do
-    TARGET="${target}" build_single_target "$@"
-done
-popd
-pushd "${INSTALL_DIR}"
-tar -chaf "${SNDFILE_STEM}.tar.bz2" "${SNDFILE_STEM}"
-popd
+SOURCE_URL="${SOURCE_URL:-https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2}"
+source "${THIS_DIR}/android-autotools-build.sh" \
+    --disable-alsa \
+    --disable-full-suite

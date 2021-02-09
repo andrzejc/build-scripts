@@ -3,50 +3,17 @@ set -e -o pipefail
 set +x
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-LAME_SOURCE_URL="${LAME_SOURCE_URL:-https://sourceforge.net/projects/lame/files/lame/3.100/lame-3.100.tar.gz}"
-wget -nv "${LAME_SOURCE_URL}"
+SOURCE_URL="${SOURCE_URL:-https://sourceforge.net/projects/lame/files/lame/3.100/lame-3.100.tar.gz}"
 
-LAME_TGZ="${LAME_SOURCE_URL##*/}"
-LAME_STEM="${LAME_TGZ%%.tar*}"
-INSTALL_DIR="${INSTALL_DIR:-${HOME}/android-deps}"
-INSTALL_SUBDIR="${INSTALL_DIR}/${LAME_STEM}"
-
-tar xf "${LAME_TGZ}"
-
-function build_single_target {
-    export CFLAGS=
-    export CXXFLAGS=
-    source "${THIS_DIR}/android-setup-toolchain.sh"
-    if [[ -n "${SNDFILE_PATH:-}" ]]
-    then
+function configure_hook() {
+    [[ -z "${SNDFILE_PATH:-}" ]] || {
         export SNDFILE_CFLAGS="-I${SNDFILE_PATH}/${ABI}/include"
         export SNDFILE_LIBS="-L${SNDFILE_PATH}/${ABI}/lib -lsndfile"
-    fi
-    ./configure \
-        --prefix="${INSTALL_SUBDIR}/${ABI}" \
-        --host="${TARGET}" \
-        --disable-frontend \
-        --enable-static \
-        --enable-shared=no \
-        --with-pic \
-        ${ICONV_PATH:+"--with-libiconv-prefix=${ICONV_PATH}/${ABI}"} \
-        ${SNDFILE_PATH:+"--with-fileio=sndfile"} \
-        "$@"
-    make -j8 install
-    make distclean
+    }
+    ./configure "$@" \
+        ${ICONV_PATH:+"--with-libiconv-prefix=${ICONV_PATH}/${ABI}"}
 }
 
-
-pushd "${LAME_STEM}"
-echo "*" > .gitignore
-TARGETS=(armv7a-linux-androideabi aarch64-linux-android i686-linux-android x86_64-linux-android)
-for target in "${TARGETS[@]}"
-do
-    TARGET="${target}" build_single_target "$@"
-done
-popd
-pushd "${INSTALL_DIR}"
-[[ -z "${ICONV_PATH:-}" ]] || echo "libiconv" >> "${LAME_STEM}/depends.txt"
-[[ -z "${SNDFILE_PATH:-}" ]] || echo "libsndfile" >> "${LAME_STEM}/depends.txt"
-tar -chaf "${LAME_STEM}.tar.bz2" "${LAME_STEM}"
-popd
+source "${THIS_DIR}/android-autotools-build.sh" \
+    --disable-frontend \
+    ${SNDFILE_PATH:+"--with-fileio=sndfile"}

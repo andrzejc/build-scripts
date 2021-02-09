@@ -3,10 +3,10 @@
 set -e -o pipefail
 set -x
 
-BOOST_VERSION="${BOOST_VERSION:-1.74.0}"
-BOOST_STEM="boost-${BOOST_VERSION}"
+VERSION="${VERSION:-1.74.0}"
+STEM="boost-${VERSION}"
 INSTALL_DIR="${INSTALL_DIR:-${HOME}/android-deps}"
-INSTALL_SUBDIR="${INSTALL_DIR}/${BOOST_STEM}"
+INSTALL_SUBDIR="${INSTALL_DIR}/${STEM}"
 NDK="${NDK:-${HOME}/Android/Sdk/ndk/22.0.7026061}"
 API="${API:-21}"
 ICU4C_PATH="${ICU4C_PATH:-${HOME}/android-deps/icu4c-68_2}"
@@ -21,11 +21,11 @@ sed \
     -e 's/"21.0"|"21.1"|"21.2"|"21.3")/"21.0"|"21.1"|"21.2"|"21.3"|"22.0")/' \
     -i build-android.sh
 
+rm -rf "${INSTALL_SUBDIR}"
 mkdir -p "${INSTALL_SUBDIR}"
 CFLAGS=-fPIC \
 CXXFLAGS=-fPIC \
-VERBOSE=no \
-    ./build-android.sh "${NDK}" --boost="${BOOST_VERSION}" \
+    ./build-android.sh "${NDK}" --boost="${VERSION}" \
         --layout=system \
         --prefix="${INSTALL_SUBDIR}" \
         --arch=arm64-v8a,armeabi-v7a,x86,x86_64 \
@@ -33,5 +33,6 @@ VERBOSE=no \
 
 popd
 pushd "${INSTALL_DIR}"
-tar -chaf "${BOOST_STEM}.tar.bz2" "${BOOST_STEM}"
+rm -rf "${STEM}.tar.bz2"
+tar -chaf "${STEM}.tar.bz2" "${STEM}"
 popd

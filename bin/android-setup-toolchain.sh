@@ -1,28 +1,34 @@
 #!/usr/bin/env bash
 ## NOTE this script is intended to be sourced, not executed
 
-NDK="${NDK:-${HOME}/Android/Sdk/ndk/22.0.7026061}"
-#TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/darwin-x86_64
-TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/linux-x86_64
+OS=$( uname -s )
+case "${OS}" in
+Darwin)
+    NDK="${NDK:-${HOME}/Library/Android/sdk/ndk/22.0.7026061}" ;;
+Linux)
+    NDK="${NDK:-${HOME}/Android/Sdk/ndk/22.0.7026061}" ;;
+*)
+    >&2 echo "Don't know how to setup NDK on ${OS}"
+    return 1
+esac
+
+TOOLCHAIN="${NDK}/toolchains/llvm/prebuilt/${OS,,}-x86_64"
 API="${API:-21}"
-TARGETS=(armv7a-linux-androideabi aarch64-linux-android i686-linux-android x86_64-linux-android)
-TARGET="${TARGET:-${TARGETS[1]}}"
 
 function setup_toolchain() {
     local binutils_target
     local abi
     case "${TARGET}" in
         armv7a-*)
-            abi=armeabi-v7a
+            export CFLAGS="${CFLAGS:-} -fsigned-char -march=armv7-a -mfloat-abi=softfp -mfpu=neon -mthumb"
+            export CXXFLAGS="${CXXFLAGS:-} -fsigned-char -march=armv7-a -mfloat-abi=softfp -mfpu=neon -mthumb"
+            export LDFLAGS="${LDFLAGS:-} -march=armv7-a -Wl,--fix-cortex-a8"
             binutils_target=arm-linux-androideabi
-            export CFLAGS="${CFLAGS} -fsigned-char"
-            export CXXFLAGS="${CXXFLAGS} -fsigned-char"
-            ;;
+            abi=armeabi-v7a ;;
         aarch64-*)
             abi=arm64-v8a ;;
         i686-*)
-            abi=x86
-            ;;
+            abi=x86 ;;
         x86_64-*)
             abi=x86_64 ;;
         *)
@@ -33,8 +39,8 @@ function setup_toolchain() {
     export ABI="${abi}"
     export AR="${TOOLCHAIN}/bin/${binutils_target}-ar"
     export AS="${TOOLCHAIN}/bin/${binutils_target}-as"
-    export CC="${TOOLCHAIN}/bin/${TARGET}${API}-clang"
-    export CXX="${TOOLCHAIN}/bin/${TARGET}${API}-clang++"
+    export CC="ccache ${TOOLCHAIN}/bin/${TARGET}${API}-clang"
+    export CXX="ccache ${TOOLCHAIN}/bin/${TARGET}${API}-clang++"
     export LD="${TOOLCHAIN}/bin/${binutils_target}-ld"
     export RANLIB="${TOOLCHAIN}/bin/${binutils_target}-ranlib"
     export STRIP="${TOOLCHAIN}/bin/${binutils_target}-strip"
