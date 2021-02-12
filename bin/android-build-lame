@@ -1,11 +1,14 @@
 #! /usr/bin/env bash
 set -e -o pipefail
 set +x
+# optional dependencies: iconv, libsndfile
+ICONV_PATH="${ICONV_PATH:-${HOME}/android-deps/libiconv-1.16}"
+SNDFILE_PATH="${SNDFILE_PATH:-${HOME}/android-deps/libsndfile-1.0.31}"
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SOURCE_URL="${SOURCE_URL:-https://sourceforge.net/projects/lame/files/lame/3.100/lame-3.100.tar.gz}"
 
-function configure_hook() {
+function run_configure() {
     [[ -z "${SNDFILE_PATH:-}" ]] || {
         export SNDFILE_CFLAGS="-I${SNDFILE_PATH}/${ABI}/include"
         export SNDFILE_LIBS="-L${SNDFILE_PATH}/${ABI}/lib -lsndfile"

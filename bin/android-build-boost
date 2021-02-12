@@ -2,6 +2,9 @@
 ## Build all boost targets and install them in ${INSTALL_DIR}/${ABI}
 set -e -o pipefail
 set -x
+# optional dependencies: iconv, icu4c
+ICU4C_PATH="${ICU4C_PATH:-${HOME}/android-deps/icu4c-68_2}"
+ICONV_PATH="${ICONV_PATH:-${HOME}/android-deps/libiconv-1.16}"
 
 VERSION="${VERSION:-1.74.0}"
 STEM="boost-${VERSION}"
@@ -9,7 +12,6 @@ INSTALL_DIR="${INSTALL_DIR:-${HOME}/android-deps}"
 INSTALL_SUBDIR="${INSTALL_DIR}/${STEM}"
 NDK="${NDK:-${HOME}/Android/Sdk/ndk/22.0.7026061}"
 API="${API:-21}"
-ICU4C_PATH="${ICU4C_PATH:-${HOME}/android-deps/icu4c-68_2}"
 
 [[ -d Boost-for-Android ]] || git clone --depth 1 https://github.com/moritz-wundke/Boost-for-Android.git
 pushd Boost-for-Android
@@ -17,7 +19,8 @@ echo "*" > .gitignore
 
 # The most recent NDK at time of writing this is 22.0, so we need to patch build-android.sh
 sed \
-    -e "s#\`pwd\`/../libiconv-libicu-android/\$ARCH#${ICU4C_PATH}/\$ARCH#" \
+    -e "s#ICU_PATH=\`pwd\`/../libiconv-libicu-android/\$ARCH#ICU_PATH=${ICU4C_PATH}/\$ARCH#" \
+    -e "s#ICONV_PATH=\`pwd\`/../libiconv-libicu-android/\$ARCH#ICONV_PATH=${ICONV_PATH}/\$ARCH#" \
     -e 's/"21.0"|"21.1"|"21.2"|"21.3")/"21.0"|"21.1"|"21.2"|"21.3"|"22.0")/' \
     -i build-android.sh
 

@@ -2,7 +2,7 @@
     >&2 echo "SOURCE_URL not set"
     return 1
 }
-wget -c -nv "${SOURCE_URL}"
+wget -nv "${SOURCE_URL}"
 
 TARBALL="${SOURCE_URL##*/}"
 if [[ "${TARBALL}" == *.zip ]]
@@ -40,14 +40,14 @@ function configure_target_default() {
             --host="${TARGET}" \
             --enable-static \
             --enable-shared=no \
-            --with-pic 
+            --with-pic
         )
         [[ -z "${CONFIGURE_ARGS}" ]] || configure_args+=("${CONFIGURE_ARGS[@]}")
     fi
 
-    if [[ $( type -t configure_hook 2> /dev/null ) == "function" ]]
+    if [[ $( type -t run_configure 2> /dev/null ) == "function" ]]
     then
-        configure_hook "${configure_args[@]}" "$@"
+        run_configure "${configure_args[@]}" "$@"
     else
         ./configure "${configure_args[@]}" "$@"
     fi

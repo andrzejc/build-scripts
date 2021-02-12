@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 set -e -o pipefail
 set +x
-
+# optional dependencies:
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SOURCE_URL="${SOURCE_URL:-https://sourceforge.net/projects/mpg123/files/mpg123/1.26.4/mpg123-1.26.4.tar.bz2}"
 
-function configure_hook() {
+function run_configure() {
     local opts
     case "${TARGET}" in
     armv7a-*)

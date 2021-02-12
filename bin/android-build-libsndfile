@@ -1,9 +1,42 @@
 #! /usr/bin/env bash
 set -e -o pipefail
 set +x
+# optional dependencies: flac, ogg, speex, vorbis, opus
+FLAC_PATH="${FLAC_PATH:-${HOME}/android-deps/flac-1.3.3}"
+OGG_PATH="${OGG_PATH:-${HOME}/android-deps/libogg-1.3.4}"
+SPEEX_PATH="${SPEEX_PATH:-${HOME}/android-deps/speex-1.2.0}"
+VORBIS_PATH="${VORBIS_PATH:-${HOME}/android-deps/libvorbis-1.3.7}"
+OPUS_PATH="${OPUS_PATH:-${HOME}/android-deps/opus-1.3.1}"
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SOURCE_URL="${SOURCE_URL:-https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2}"
+
+function run_configure() {
+    [[ -z "${FLAC_PATH:-}" ]] || {
+        export FLAC_CFLAGS="-I${FLAC_PATH}/${ABI}/include"
+        export FLAC_LIBS="-L${FLAC_PATH}/${ABI}/lib"
+    }
+    [[ -z "${OGG_PATH:-}" ]] || {
+        export OGG_CFLAGS="-I${OGG_PATH}/${ABI}/include"
+        export OGG_LIBS="-L${OGG_PATH}/${ABI}/lib"
+    }
+    [[ -z "${SPEEX_PATH:-}" ]] || {
+        export SPEEX_CFLAGS="-I${SPEEX_PATH}/${ABI}/include"
+        export SPEEX_LIBS="-L${SPEEX_PATH}/${ABI}/lib"
+    }
+    [[ -z "${VORBIS_PATH:-}" ]] || {
+        export VORBIS_CFLAGS="-I${VORBIS_PATH}/${ABI}/include"
+        export VORBIS_LIBS="-L${VORBIS_PATH}/${ABI}/lib"
+        export VORBISENC_CFLAGS="-I${VORBIS_PATH}/${ABI}/include"
+        export VORBISENC_LIBS="-L${VORBIS_PATH}/${ABI}/lib"
+    }
+    [[ -z "${OPUS_PATH:-}" ]] || {
+        export OPUS_CFLAGS="-I${OPUS_PATH}/${ABI}/include"
+        export OPUS_LIBS="-L${OPUS_PATH}/${ABI}/lib"
+    }
+    ./configure "$@"
+}
+
 source "${THIS_DIR}/android-autotools-build.sh" \
     --disable-alsa \
     --disable-full-suite

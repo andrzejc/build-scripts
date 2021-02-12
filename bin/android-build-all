@@ -1,0 +1,18 @@
+#! /usr/bin/env bash
+set -e -o pipefail
+set +x
+
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+"${THIS_DIR}/android-build-speexdsp"
+"${THIS_DIR}/android-build-ogg"
+"${THIS_DIR}/android-build-speex"
+"${THIS_DIR}/android-build-vorbis"
+"${THIS_DIR}/android-build-iconv"
+"${THIS_DIR}/android-build-flac"
+"${THIS_DIR}/android-build-opus"
+"${THIS_DIR}/android-build-libsndfile"
+"${THIS_DIR}/android-build-mpg123"
+"${THIS_DIR}/android-build-lame"
+"${THIS_DIR}/android-build-fftw3"
+"${THIS_DIR}/android-build-icu4c"
+"${THIS_DIR}/android-build-boost"

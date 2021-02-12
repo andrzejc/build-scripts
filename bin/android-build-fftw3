@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 set -e -o pipefail
 set +x
-
+# optional dependencies:
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SOURCE_URL="${SOURCE_URL:=http://www.fftw.org/fftw-3.3.9.tar.gz}"
 
-function configure_hook() {
+function run_configure() {
     local opts
     case "${TARGET}" in
     armv7a-*|aarch64-*)

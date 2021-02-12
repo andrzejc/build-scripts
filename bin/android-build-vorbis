@@ -1,0 +1,21 @@
+#! /usr/bin/env bash
+set -e -o pipefail
+set +x
+# optional dependencies: ogg
+OGG_PATH="${OGG_PATH:-${HOME}/android-deps/libogg-1.3.4}"
+
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SOURCE_URL="${SOURCE_URL:-https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.tar.xz}"
+
+function run_configure() {
+    [[ -z "${OGG_PATH:-}" ]] || {
+        export OGG_CFLAGS="-I${OGG_PATH}/${ABI}/include"
+        export OGG_LIBS="-L${OGG_PATH}/${ABI}/lib"
+    }
+    sed -e 's/-mno-ieee-fp//' -i configure
+    ./configure "$@" \
+        ${OGG_PATH:+"--with-ogg=${OGG_PATH}/${ABI}"}
+}
+
+source "${THIS_DIR}/android-autotools-build.sh" \
+    --disable-oggtest

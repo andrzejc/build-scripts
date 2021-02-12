@@ -1,0 +1,20 @@
+#! /usr/bin/env bash
+set -e -o pipefail
+set +x
+# optional dependencies:
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SOURCE_URL="${SOURCE_URL:-https://ftp.osuosl.org/pub/xiph/releases/speex/speexdsp-1.2.0.tar.gz}"
+
+function run_configure() {
+    local args=()
+    case "${TARGET}" in
+    armv7a-*|aarch64-*)
+        args+=(--enable-neon) ;;
+    i686-*|x86_64-*)
+        args+=(--enable-sse) ;;
+    esac
+    ./configure "${args[@]}" "$@"
+}
+
+source "${THIS_DIR}/android-autotools-build.sh" \
+    --disable-binaries
