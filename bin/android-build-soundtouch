@@ -1,0 +1,16 @@
+#! /usr/bin/env bash
+set -e -o pipefail
+set +x
+# optional dependencies:
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SOURCE_URL="${SOURCE_URL:-https://gitlab.com/soundtouch/soundtouch/-/archive/2.2/soundtouch-2.2.tar.bz2}"
+
+function run_configure() {
+    if [[ ! -x ./configure ]]
+    then
+        ./bootstrap
+    fi
+    ./configure "$@"
+}
+
+source "${THIS_DIR}/android-autotools-build.sh"
