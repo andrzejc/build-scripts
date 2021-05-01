@@ -43,7 +43,7 @@ function safe_download {
     temp_file=$( mktemp )
     local referer="${url_no_query%/*}"
     trap "> /dev/null 2>&1 rm -rf '${temp_file}'" EXIT
-    wget --no-verbose --show-progress --wait=2 --random-wait \
+    wget --no-verbose --wait=2 --random-wait \
         --tries=0 --progress=dot:mega -O "${temp_file}" "${url}"
     local file_hash=
     # Note: openssl invoked this way seems to be most portable way to get hash between Linux/macOS versions

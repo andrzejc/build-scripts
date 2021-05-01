@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 
 # Required for safe-download script
-choco install openssl.light
+choco install openssl.light --no-progress
 
 bin/winstall-portaudio "${TARGET_PLATFORM}"
 
